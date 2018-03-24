@@ -4,7 +4,6 @@ let fps = 60,
 	final = inRad(360);
 
 export function enterCanvas ( quantity, radii, durations, charges ) {
-
 	let canvas = document.getElementById('particles'),
 		ctx = canvas.getContext('2d'),
 		baseX = canvas.width / 2, 
@@ -28,9 +27,7 @@ export function enterCanvas ( quantity, radii, durations, charges ) {
 			clockwise[i] = true;
 		}
 	}
-
 	run();
-
 	function run() {
 		if ( !stopRun ) {
 			sumCharges = 0;
@@ -54,7 +51,6 @@ export function enterCanvas ( quantity, radii, durations, charges ) {
 			return false;
 		}	
 	}
-
 	function addCircles( startAngle, currentDegrees ){
 		degree = 0;
 		i = 0;

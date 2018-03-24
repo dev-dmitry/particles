@@ -89,7 +89,6 @@ import * as tools from './components/tools.js';
 			$('.quantity_el').val(50);
 			quantity = 50;
 		}
-
 		for ( let i = 0; i < quantity; i++ ) {
 			let duration = $particlesEdit.eq(i).children('.duration').val(),			
 				charge = $particlesEdit.eq(i).children('.charge').val() * 1,
