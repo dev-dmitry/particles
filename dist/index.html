@@ -6,7 +6,7 @@
   <link rel="stylesheet" type="text/css" href="css/style.css">
   <link href="css/font-awesome.css" type="text/css" rel="stylesheet" >
 </head>
-<body>
+<body class="demo-4">
   <nav>
     <a href=""><img src="img/logo.png"></a>
     <h4>Движение частиц в электромагнитном поле</h4>
@@ -22,7 +22,6 @@
   </div>
   <main>
     <div class="control">
-
       <div class="options">
         <div class="title-project">
           <h3>Движение частиц с одинаковым радиусом</h3>
@@ -46,7 +45,6 @@
           <div id="enter">Запустить</div>
         </div>
       </div>
-
       <div id="description">
         <div class="back"><i class="fa fa-arrow-left" aria-hidden="true"></i></div>
         <div>
@@ -60,7 +58,6 @@
           </p> 
         </div>
       </div>
-      
       <div id="options_particles">
         <div>
           <div class="back"><i class="fa fa-arrow-left" aria-hidden="true"></i></div>
@@ -68,7 +65,6 @@
           <div id="options-block"></div>
         </div>  
       </div>
-
     </div>
 
     <div class="particles-block">
@@ -82,15 +78,39 @@
         <div class="left">
           <i class="fa fa-copyright" aria-hidden="true"></i> All rights Reserved
         </div>
-        <div class="right">
-          Made by <a class="yellow" href="http://developerdmitry.ru" target="_blank">Dmitry</a>
-        </div>
+        <!--<div class="right">
+          Made by <a class="yellow" href="http://developerdmitry.ru" target="_blank"></a>
+        </div>-->
       </div>
     </div>
   </footer>
 
+  <main>
+    <div class="content content--fixed">
+      <div class="debug">
+        <svg class="icon icon--debug" title="Toggle Debug Mode"><use xlink:href="#icon-debug"></use></svg>
+        <div class="timescale-wrap">
+          <label class="timescale-label">
+            <span class="timescale-title">Timescale:</span>
+            <span class="timescale-value">1.0</span>
+            <input class="timescale-range" type="range" min="0" max="3" step="0.1" value="1">
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="loader"></div>
+    <div class="content-outer">
+      <div class="content-inner">
+        <h1>Entanglement</h1>
+        <a href="#" class="replay-animation">Replay</a>
+      </div>
+    </div>
+  </main>
 
-
+  <script src="js/demo.js"></script>
+  <script src="js/vendor/three.min.js"></script>
+  <script src="js/vendor/OrbitControls.js"></script>
+  <script src="js/vendor/fast-simplex-noise.js"></script>
   <script src="js/bundle.js"></script>
 </body>
 </html>
