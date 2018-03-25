@@ -1,9 +1,10 @@
 const ParticleBase = require('../particle-base');
 const Osc = require('../utils/osc');
-
+let test = true;
 class Particle extends ParticleBase {
 	constructor(config, system, loader) {
 		super(config, system, loader);
+		this.config = config;
 		this.radius = config.radius;
 		this.order = config.order;
 		this.alternate = config.alternate;
@@ -15,6 +16,12 @@ class Particle extends ParticleBase {
 		this.osc.reset();
 	}
 	update() {
+	    if (test){
+	    	console.log(this.config);
+	    	console.log(this.calc);
+	    	console.log('----c');
+	    }
+
 		this.osc.update(this.loader.timescale);
 		let angle = this.calc.map(this.order, 0, 1, -Math.cos(this.loader.elapsedMilliseconds * 0.0015) * (Math.PI * 1.5), Math.sin(this.loader.elapsedMilliseconds * 0.0015) * (Math.PI * 1.5));
 		angle += this.alternate ? Math.PI : 0;
@@ -29,6 +36,13 @@ class Particle extends ParticleBase {
 		let scale = 0.1 + (this.osc.val(this.ease.inOutExpo)) * 0.2;
 		if(this.alternate) {
 			scale = 0.1 + (1 - this.osc.val(this.ease.inOutExpo)) * 0.2;
+		}
+        if (test){
+			console.log(this.mesh);
+			console.log(scale);
+			console.log(this.calc.map(this.order, 0, 1, -this.system.height , this.system.height));
+			console.log(angle);
+			test = false;
 		}
 		this.mesh.scale.set(scale, scale, scale);
 	}

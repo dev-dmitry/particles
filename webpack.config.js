@@ -1,9 +1,14 @@
 
 module.exports = {
-	entry: './app/js/main.js',
+	entry: {
+		old: "./app/js/mainOld.js",
+		three: "./app/js/main3D.js",
+		main: "./app/js/main.js",
+	},
 	output: {
-		filename: './dist/js/bundle.js'
-	},   
+		filename: "./dist/js/[name].bundle.js"
+	},
+    devtool: 'source-map',
 	resolve: {
         alias: {
             jquery: "jquery/dist/jquery.min"
