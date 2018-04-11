@@ -73,6 +73,7 @@ class Loader {
 	setupScene() {
 		this.scene = new THREE.Scene();
 	}
+	console.log( 'test' )
 
 	setupCamera() {
 		this.camera = new THREE.PerspectiveCamera(100, 0, 0.0001, 10000);
