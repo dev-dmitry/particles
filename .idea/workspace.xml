@@ -5,16 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8096fa9e-cc7e-4644-a17d-13a6000486fd" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/app/js/3d/demo-4/index.js" afterPath="$PROJECT_DIR$/app/js/3d/demo-4/index.js" />
-      <change beforePath="$PROJECT_DIR$/app/js/3d/demo-4/particle.js" afterPath="$PROJECT_DIR$/app/js/3d/demo-4/particle.js" />
       <change beforePath="$PROJECT_DIR$/app/js/3d/loader.js" afterPath="$PROJECT_DIR$/app/js/3d/loader.js" />
-      <change beforePath="$PROJECT_DIR$/app/js/main3D.js" afterPath="$PROJECT_DIR$/app/js/main3D.js" />
-      <change beforePath="$PROJECT_DIR$/dist/js/main.bundle.js" afterPath="$PROJECT_DIR$/dist/js/main.bundle.js" />
-      <change beforePath="$PROJECT_DIR$/dist/js/main.bundle.js.map" afterPath="$PROJECT_DIR$/dist/js/main.bundle.js.map" />
-      <change beforePath="$PROJECT_DIR$/dist/js/old.bundle.js.map" afterPath="$PROJECT_DIR$/dist/js/old.bundle.js.map" />
-      <change beforePath="$PROJECT_DIR$/dist/js/three.bundle.js" afterPath="$PROJECT_DIR$/dist/js/three.bundle.js" />
-      <change beforePath="$PROJECT_DIR$/dist/js/three.bundle.js.map" afterPath="$PROJECT_DIR$/dist/js/three.bundle.js.map" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -409,12 +400,12 @@
       <workItem from="1522064509950" duration="121000" />
       <workItem from="1522064652133" duration="2000" />
       <workItem from="1522089020774" duration="1306000" />
-      <workItem from="1523436919113" duration="6000" />
+      <workItem from="1523436919113" duration="43000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="26672000" />
+    <option name="totallyTimeSpent" value="26709000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
