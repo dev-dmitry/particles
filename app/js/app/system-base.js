@@ -11,6 +11,7 @@ class SystemBase {
 
 		this.particles = [];
 		this.particleGroup = new THREE.Object3D();
+		this.particleGroup.position.z = -5.7;
 		this.particleGroup.scale.set(0.0001, 0.0001, 0.0001);
 
 		this.loader.scene.add(this.particleGroup);

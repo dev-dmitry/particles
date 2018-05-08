@@ -328,7 +328,9 @@ footer .right{
 	text-align: right;
 	float: right;
 }
-
+.content--fixed{
+	height: 20px;
+}
 
 @media only screen and (max-width: 1400px) {
 	.options label, #play-options{

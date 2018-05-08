@@ -451,13 +451,13 @@ module.exports = __webpack_amd_options__;
 
 /***/ }),
 /* 7 */,
-/* 8 */,
-/* 9 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(19);
 
 /***/ }),
+/* 9 */,
 /* 10 */,
 /* 11 */,
 /* 12 */,
@@ -500,6 +500,7 @@ var ParticleBase = __webpack_require__(23);
 var Osc = __webpack_require__(28);
 
 var test = true;
+var flag = 0;
 
 var Particle =
 /*#__PURE__*/
@@ -514,46 +515,52 @@ function (_ParticleBase) {
     _this = _possibleConstructorReturn(this, (Particle.__proto__ || Object.getPrototypeOf(Particle)).call(this, config, system, loader));
     _this.config = config;
     _this.radius = config.radius;
-    _this.order = config.order;
-    _this.alternate = config.alternate;
-    _this.osc = new Osc(_this.order, 0.015, true, false);
+    _this.order = config.order; //this.alternate = config.alternate;
+    //this.osc = new Osc(this.order, 0.015, true, false);
 
-    _this.reset();
+    _this.reset(); //TODO добавить в gui объект отвечающий за параметры движения частицы
 
+
+    var gui = new dat.GUI();
+    gui.add(_this.config.group.quaternion, '_z').min(-4).max(4).step(0.1);
     return _this;
   }
 
   _createClass(Particle, [{
     key: "reset",
     value: function reset() {
-      _get(Particle.prototype.__proto__ || Object.getPrototypeOf(Particle.prototype), "reset", this).call(this);
+      _get(Particle.prototype.__proto__ || Object.getPrototypeOf(Particle.prototype), "reset", this).call(this); //	this.osc.reset();
 
-      this.osc.reset();
     }
   }, {
     key: "update",
     value: function update() {
       if (test) {
         console.log(this.config);
-        test = false;
-      }
+        flag++;
+        if (flag > 5) test = false;
+      } //this.osc.update(this.loader.timescale);
 
-      this.osc.update(this.loader.timescale);
-      var angle = this.calc.map(this.order, 0, 1, -Math.cos(this.loader.elapsedMilliseconds * 0.0015) * (Math.PI * 1.5), Math.sin(this.loader.elapsedMilliseconds * 0.0015) * (Math.PI * 1.5));
-      angle += this.alternate ? Math.PI : 0;
+      /*let angle = this.calc.map(this.order, 0, 1, -Math.cos(this.loader.elapsedMilliseconds * 0.0015) * (Math.PI * 1.5), Math.sin(this.loader.elapsedMilliseconds * 0.0015) * (Math.PI * 1.5));
+      angle += 0;*/
+
+
+      var angle = 0;
+      angle += 0.5;
       var x = Math.cos(angle) * this.radius;
-      var y = this.calc.map(this.order, 0, 1, -this.system.height, this.system.height);
-      var z = Math.sin(angle) * this.radius;
+      var y = Math.sin(angle) * this.radius;
+      /*let x = Math.cos(angle) * this.radius;
+      let y = this.calc.map(this.order, 0, 1, -this.system.height , this.system.height);*/
+
+      var z = (Math.sin(angle) + Math.cos(angle)) * this.radius;
       this.mesh.position.x = x;
       this.mesh.position.y = y;
-      this.mesh.position.z = z;
-      var scale = 0.1 + this.osc.val(this.ease.inOutExpo) * 0.2;
+      this.mesh.position.z = z; //	let scale = 0.1 + (this.osc.val(this.ease.inOutExpo)) * 0.2;
 
-      if (this.alternate) {
-        scale = 0.1 + (1 - this.osc.val(this.ease.inOutExpo)) * 0.2;
-      }
-
-      this.mesh.scale.set(scale, scale, scale);
+      /*if(this.alternate) {
+      	scale = 0.1 + (1 - this.osc.val(this.ease.inOutExpo)) * 0.2;
+      }*/
+      //this.mesh.scale.set(scale, scale, scale);
     }
   }]);
 
@@ -597,29 +604,31 @@ function (_SystemBase) {
     _this = _possibleConstructorReturn(this, (System.__proto__ || Object.getPrototypeOf(System)).call(this, loader));
     _this.duration = 5500;
     _this.lines = [];
-    _this.count = 24;
+    _this.count = 1;
     _this.height = 10;
+    console.log(_this.particleGroup);
 
-    for (var i = 0; i < _this.count; i++) {
+    for (var i = 0; i <= _this.count; i++) {
       _this.particles.push(new Particle({
         group: _this.particleGroup,
-        order: i / (_this.count - 1),
+        order: 1,
         alternate: false,
         color: 0xffffff,
         opacity: 1,
         size: 0.1,
+        //TODO не влияет на размер
         radius: 4
       }, _this, _this.loader));
+      /*this.particles.push(new Particle({
+      	group: this.particleGroup,
+      	order: i / (this.count - 1),
+      	alternate: true,
+      	color: 0xffffff,
+      	opacity: 1,
+      	size: 0.1,
+      	radius: 4,
+      }, this, this.loader));*/
 
-      _this.particles.push(new Particle({
-        group: _this.particleGroup,
-        order: i / (_this.count - 1),
-        alternate: true,
-        color: 0xffffff,
-        opacity: 1,
-        size: 0.1,
-        radius: 4
-      }, _this, _this.loader));
     }
 
     var lineMaterial = new THREE.LineBasicMaterial({
@@ -694,6 +703,8 @@ var Ease = __webpack_require__(27);
 
 var AxisHelper = __webpack_require__(25);
 
+var flag = 0;
+
 var Loader =
 /*#__PURE__*/
 function () {
@@ -765,12 +776,22 @@ function () {
   }, {
     key: "setupScene",
     value: function setupScene() {
+      var light = new THREE.AmbientLight(0xffffff);
       this.scene = new THREE.Scene();
+      this.scene.add(light);
+      var geometry = new THREE.SphereGeometry(200, 12, 12);
+      var material = new THREE.MeshBasicMaterial({
+        color: 0x00ff00,
+        wireframe: true
+      });
+      var mesh = new THREE.Mesh(geometry, material);
+      this.scene.add(mesh);
     }
   }, {
     key: "setupCamera",
     value: function setupCamera() {
-      this.camera = new THREE.PerspectiveCamera(100, 0, 0.0001, 10000);
+      this.camera = new THREE.PerspectiveCamera(45, 0, 0.0001, 10000); //this.camera = new THREE.PerspectiveCamera(45, width/height, 0.1, 5000);
+
       this.cameraBaseX = this.isGrid ? -20 : 0;
       this.cameraBaseY = this.isGrid ? 15 : 0;
       this.cameraBaseZ = this.isGrid ? 20 : 30;
@@ -1050,7 +1071,8 @@ function () {
         transparent: true,
         opacity: this.opacity,
         depthTest: false,
-        precision: 'lowp'
+        precision: 'lowp' //   wireframe: true
+
       });
       this.mesh = new THREE.Mesh(this.geometry, this.material);
       this.mesh.position.x = this.x;
@@ -1093,6 +1115,7 @@ function () {
     this.center = new THREE.Vector3();
     this.particles = [];
     this.particleGroup = new THREE.Object3D();
+    this.particleGroup.position.z = -5.7;
     this.particleGroup.scale.set(0.0001, 0.0001, 0.0001);
     this.loader.scene.add(this.particleGroup);
     this.entering = true;
@@ -2108,7 +2131,7 @@ __webpack_require__(4);
 
 __webpack_require__(2);
 
-__webpack_require__(9);
+__webpack_require__(8);
 
 /***/ })
 /******/ ]);

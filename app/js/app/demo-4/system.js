@@ -8,21 +8,21 @@ class System extends SystemBase {
 
 		this.duration = 5500;
 		this.lines = [];
-		this.count = 24;
+		this.count = 1;
 		this.height = 10;
-
-		for(let i = 0; i < this.count; i++) {
+console.log( this.particleGroup )
+		for(let i = 0; i <= this.count; i++) {
 			this.particles.push(new Particle({
 				group: this.particleGroup,
-				order: i / (this.count - 1),
+				order: 1,
 				alternate: false,
 				color: 0xffffff,
 				opacity: 1,
-				size: 0.1,
+				size: 0.1, //TODO не влияет на размер
 				radius: 4,
 			}, this, this.loader));
 
-			this.particles.push(new Particle({
+			/*this.particles.push(new Particle({
 				group: this.particleGroup,
 				order: i / (this.count - 1),
 				alternate: true,
@@ -30,7 +30,7 @@ class System extends SystemBase {
 				opacity: 1,
 				size: 0.1,
 				radius: 4,
-			}, this, this.loader));
+			}, this, this.loader));*/
 		}
 
 		let lineMaterial = new THREE.LineBasicMaterial({

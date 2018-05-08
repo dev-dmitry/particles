@@ -1,7 +1,7 @@
 const Calc = require('./utils/calc');
 const Ease = require('./utils/ease');
 const AxisHelper = require('./utils/axis');
-
+let flag = 0;
 class Loader {
 
 	constructor(System) {
@@ -71,11 +71,18 @@ class Loader {
 	}
 
 	setupScene() {
+        let light = new THREE.AmbientLight(0xffffff)
 		this.scene = new THREE.Scene();
+        this.scene.add(light)
+		let geometry = new THREE.SphereGeometry(200, 12, 12);
+		let material = new THREE.MeshBasicMaterial({color: 0x00ff00, wireframe: true});
+		let mesh = new THREE.Mesh(geometry, material)
+		this.scene.add(mesh);
 	}
 
 	setupCamera() {
-		this.camera = new THREE.PerspectiveCamera(100, 0, 0.0001, 10000);
+		this.camera = new THREE.PerspectiveCamera(45, 0, 0.0001, 10000);
+		//this.camera = new THREE.PerspectiveCamera(45, width/height, 0.1, 5000);
 
 		this.cameraBaseX = this.isGrid ? -20 : 0;
 		this.cameraBaseY = this.isGrid ? 15 : 0;
@@ -278,7 +285,7 @@ class Loader {
 	loop() {
 		this.update();
 		this.render();
-		this.raf = window.requestAnimationFrame(() => this.loop());
+		this.raf = window.requestAnimationFrame(() => this.loop() );
 	}
 
 }

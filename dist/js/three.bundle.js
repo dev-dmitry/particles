@@ -451,278 +451,24 @@ module.exports = __webpack_amd_options__;
 
 /***/ }),
 /* 7 */
-/***/ (function(module, exports) {
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var Calc =
-/*#__PURE__*/
-function () {
-  function Calc() {
-    _classCallCheck(this, Calc);
-  }
-
-  _createClass(Calc, [{
-    key: "rand",
-
-    /*
-    ------------------------------------------
-    | rand:float - returns random float
-    |
-    | min:number - minimum value
-    | max:number - maximum value
-    | ease:function - easing function to apply to the random value
-    |
-    | Get a random float between two values,
-    | with the option of easing bias.
-    ------------------------------------------ */
-    value: function rand(min, max, ease) {
-      if (max === undefined) {
-        max = min;
-        min = 0;
-      }
-
-      var random = Math.random();
-
-      if (ease) {
-        random = ease(Math.random(), 0, 1, 1);
-      }
-
-      return random * (max - min) + min;
-    }
-    /*
-    ------------------------------------------
-    | randInt:integer - returns random integer
-    |
-    | min:number - minimum value
-    | max:number - maximum value
-    | ease:function - easing function to apply to the random value
-    |
-    | Get a random integer between two values,
-    | with the option of easing bias.
-    ------------------------------------------ */
-
-  }, {
-    key: "randInt",
-    value: function randInt(min, max, ease) {
-      if (max === undefined) {
-        max = min;
-        min = 0;
-      }
-
-      var random = Math.random();
-
-      if (ease) {
-        random = ease(Math.random(), 0, 1, 1);
-      }
-
-      return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-    /*
-    ------------------------------------------
-    | randArr:item - returns random iem from array
-    |
-    | arr:array - the array to randomly pull from
-    |
-    | Get a random item from an array.
-    ------------------------------------------ */
-
-  }, {
-    key: "randArr",
-    value: function randArr(arr) {
-      return arr[Math.floor(Math.random() * arr.length)];
-    }
-    /*
-    ------------------------------------------
-    | map:number - returns a mapped value
-    |
-    | val:number - input value
-    | inputMin:number - minimum of input range
-    | inputMax:number - maximum of input range
-    | outputMin:number - minimum of output range
-    | outputMax:number - maximum of output range
-    |
-    | Get a mapped value from and input min/max
-    | to an output min/max.
-    ------------------------------------------ */
-
-  }, {
-    key: "map",
-    value: function map(val, inputMin, inputMax, outputMin, outputMax) {
-      return (outputMax - outputMin) * ((val - inputMin) / (inputMax - inputMin)) + outputMin;
-    }
-    /*
-    ------------------------------------------
-    | clamp:number - returns clamped value
-    |
-    | val:number - value to be clamped
-    | min:number - minimum of clamped range
-    | max:number - maximum of clamped range
-    |
-    | Clamp a value to a min/max range.
-    ------------------------------------------ */
-
-  }, {
-    key: "clamp",
-    value: function clamp(val, min, max) {
-      return Math.max(Math.min(val, max), min);
-    }
-  }, {
-    key: "lerp",
-    value: function lerp(current, target, mix) {
-      return current + (target - current) * mix;
-    }
-    /*
-    ------------------------------------------
-    | roundToUpperInterval:number - returns rounded up value
-    |
-    | value:number - value to be rounded
-    | interval:number - interval
-    |
-    | Round up a value to the next highest interval.
-    ------------------------------------------ */
-
-  }, {
-    key: "roundToUpperInterval",
-    value: function roundToUpperInterval(value, interval) {
-      if (value % interval === 0) {
-        value += 0.0001;
-      }
-
-      return Math.ceil(value / interval) * interval;
-    }
-    /*
-    ------------------------------------------
-    | roundDownToInterval:number - returns rounded down value
-    |
-    | value:number - value to be rounded
-    | interval:number - interval
-    |
-    | Round down a value to the next lowest interval.
-    ------------------------------------------ */
-
-  }, {
-    key: "roundToLowerInterval",
-    value: function roundToLowerInterval(value, interval) {
-      if (value % interval === 0) {
-        value -= 0.0001;
-      }
-
-      return Math.floor(value / interval) * interval;
-    }
-    /*
-    ------------------------------------------
-    | roundToNearestInterval:number - returns rounded value
-    |
-    | value:number - value to be rounded
-    | interval:number - interval
-    |
-    | Round a value to the nearest interval.
-    ------------------------------------------ */
-
-  }, {
-    key: "roundToNearestInterval",
-    value: function roundToNearestInterval(value, interval) {
-      return Math.round(value / interval) * interval;
-    }
-    /*
-    ------------------------------------------
-    | intersectSphere:boolean - returns if intersecting or not
-    |
-    | a:object - sphere 1 with radius, x, y, and z
-    | b:object - sphere 2 with radius, x, y, and z
-    |
-    | Check if two sphere are intersecting
-    | in 3D space.
-    ------------------------------------------ */
-
-  }, {
-    key: "intersectSphere",
-    value: function intersectSphere(a, b) {
-      var distance = Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) + (a.z - b.z) * (a.z - b.z));
-      return distance < a.radius + b.radius;
-    }
-    /*
-    ------------------------------------------
-    | getIndexFromCoords:number - returns index
-    |
-    | x:number - x value (column)
-    | y:number - y value (row)
-    | w:number - width of grid
-    |
-    | Convert from grid coords to index.
-    ------------------------------------------ */
-
-  }, {
-    key: "getIndexFromCoords",
-    value: function getIndexFromCoords(x, y, w) {
-      return x + y * w;
-    }
-    /*
-    ------------------------------------------
-    | getCoordsFromIndex:object - returns coords
-    |
-    | i:number - index
-    | w:number - width of grid
-    |
-    | Convert from index to grid coords.
-    ------------------------------------------ */
-
-  }, {
-    key: "getCoordsFromIndex",
-    value: function getCoordsFromIndex(i, w) {
-      return {
-        x: i % w,
-        y: Math.floor(i / w)
-      };
-    }
-  }, {
-    key: "visibleHeightAtZDepth",
-    value: function visibleHeightAtZDepth(depth, camera) {
-      // https://discourse.threejs.org/t/functions-to-calculate-the-visible-width-height-at-a-given-z-depth-from-a-perspective-camera/269
-      var cameraOffset = camera.position.z;
-      if (depth < cameraOffset) depth -= cameraOffset;else depth += cameraOffset;
-      var vFOV = camera.fov * Math.PI / 180;
-      return 2 * Math.tan(vFOV / 2) * Math.abs(depth);
-    }
-  }, {
-    key: "visibleWidthAtZDepth",
-    value: function visibleWidthAtZDepth(depth, camera) {
-      // https://discourse.threejs.org/t/functions-to-calculate-the-visible-width-height-at-a-given-z-depth-from-a-perspective-camera/269
-      var height = this.visibleHeightAtZDepth(depth, camera);
-      return height * camera.aspect;
-    }
-  }]);
-
-  return Calc;
-}();
-
-module.exports = Calc;
-
-/***/ }),
-/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(10);
+__webpack_require__(9);
 
 /***/ }),
-/* 9 */,
-/* 10 */
+/* 8 */,
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Loader = __webpack_require__(13);
+var Loader = __webpack_require__(12);
 
-var System = __webpack_require__(12);
+var System = __webpack_require__(11);
 
 window.demoNum = 2;
 var loader = new Loader(System);
 
 /***/ }),
-/* 11 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -739,7 +485,7 @@ function _get(object, property, receiver) { if (object === null) object = Functi
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var ParticleBase = __webpack_require__(14);
+var ParticleBase = __webpack_require__(13);
 
 var Osc = __webpack_require__(18);
 
@@ -818,7 +564,7 @@ function (_ParticleBase) {
 module.exports = Particle;
 
 /***/ }),
-/* 12 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -835,9 +581,9 @@ function _get(object, property, receiver) { if (object === null) object = Functi
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var SystemBase = __webpack_require__(15);
+var SystemBase = __webpack_require__(14);
 
-var Particle = __webpack_require__(11);
+var Particle = __webpack_require__(10);
 
 var System =
 /*#__PURE__*/
@@ -934,7 +680,7 @@ function (_SystemBase) {
 module.exports = System;
 
 /***/ }),
-/* 13 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -943,11 +689,11 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var Calc = __webpack_require__(7);
+var Calc = __webpack_require__(16);
 
 var Ease = __webpack_require__(17);
 
-var AxisHelper = __webpack_require__(16);
+var AxisHelper = __webpack_require__(15);
 
 var Loader =
 /*#__PURE__*/
@@ -1267,7 +1013,7 @@ function () {
 module.exports = Loader;
 
 /***/ }),
-/* 14 */
+/* 13 */
 /***/ (function(module, exports) {
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1325,7 +1071,7 @@ function () {
 module.exports = ParticleBase;
 
 /***/ }),
-/* 15 */
+/* 14 */
 /***/ (function(module, exports) {
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1416,7 +1162,7 @@ function () {
 module.exports = SystemBase;
 
 /***/ }),
-/* 16 */
+/* 15 */
 /***/ (function(module, exports) {
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1459,6 +1205,260 @@ function () {
 }();
 
 module.exports = AxisHelper;
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports) {
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Calc =
+/*#__PURE__*/
+function () {
+  function Calc() {
+    _classCallCheck(this, Calc);
+  }
+
+  _createClass(Calc, [{
+    key: "rand",
+
+    /*
+    ------------------------------------------
+    | rand:float - returns random float
+    |
+    | min:number - minimum value
+    | max:number - maximum value
+    | ease:function - easing function to apply to the random value
+    |
+    | Get a random float between two values,
+    | with the option of easing bias.
+    ------------------------------------------ */
+    value: function rand(min, max, ease) {
+      if (max === undefined) {
+        max = min;
+        min = 0;
+      }
+
+      var random = Math.random();
+
+      if (ease) {
+        random = ease(Math.random(), 0, 1, 1);
+      }
+
+      return random * (max - min) + min;
+    }
+    /*
+    ------------------------------------------
+    | randInt:integer - returns random integer
+    |
+    | min:number - minimum value
+    | max:number - maximum value
+    | ease:function - easing function to apply to the random value
+    |
+    | Get a random integer between two values,
+    | with the option of easing bias.
+    ------------------------------------------ */
+
+  }, {
+    key: "randInt",
+    value: function randInt(min, max, ease) {
+      if (max === undefined) {
+        max = min;
+        min = 0;
+      }
+
+      var random = Math.random();
+
+      if (ease) {
+        random = ease(Math.random(), 0, 1, 1);
+      }
+
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    /*
+    ------------------------------------------
+    | randArr:item - returns random iem from array
+    |
+    | arr:array - the array to randomly pull from
+    |
+    | Get a random item from an array.
+    ------------------------------------------ */
+
+  }, {
+    key: "randArr",
+    value: function randArr(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+    /*
+    ------------------------------------------
+    | map:number - returns a mapped value
+    |
+    | val:number - input value
+    | inputMin:number - minimum of input range
+    | inputMax:number - maximum of input range
+    | outputMin:number - minimum of output range
+    | outputMax:number - maximum of output range
+    |
+    | Get a mapped value from and input min/max
+    | to an output min/max.
+    ------------------------------------------ */
+
+  }, {
+    key: "map",
+    value: function map(val, inputMin, inputMax, outputMin, outputMax) {
+      return (outputMax - outputMin) * ((val - inputMin) / (inputMax - inputMin)) + outputMin;
+    }
+    /*
+    ------------------------------------------
+    | clamp:number - returns clamped value
+    |
+    | val:number - value to be clamped
+    | min:number - minimum of clamped range
+    | max:number - maximum of clamped range
+    |
+    | Clamp a value to a min/max range.
+    ------------------------------------------ */
+
+  }, {
+    key: "clamp",
+    value: function clamp(val, min, max) {
+      return Math.max(Math.min(val, max), min);
+    }
+  }, {
+    key: "lerp",
+    value: function lerp(current, target, mix) {
+      return current + (target - current) * mix;
+    }
+    /*
+    ------------------------------------------
+    | roundToUpperInterval:number - returns rounded up value
+    |
+    | value:number - value to be rounded
+    | interval:number - interval
+    |
+    | Round up a value to the next highest interval.
+    ------------------------------------------ */
+
+  }, {
+    key: "roundToUpperInterval",
+    value: function roundToUpperInterval(value, interval) {
+      if (value % interval === 0) {
+        value += 0.0001;
+      }
+
+      return Math.ceil(value / interval) * interval;
+    }
+    /*
+    ------------------------------------------
+    | roundDownToInterval:number - returns rounded down value
+    |
+    | value:number - value to be rounded
+    | interval:number - interval
+    |
+    | Round down a value to the next lowest interval.
+    ------------------------------------------ */
+
+  }, {
+    key: "roundToLowerInterval",
+    value: function roundToLowerInterval(value, interval) {
+      if (value % interval === 0) {
+        value -= 0.0001;
+      }
+
+      return Math.floor(value / interval) * interval;
+    }
+    /*
+    ------------------------------------------
+    | roundToNearestInterval:number - returns rounded value
+    |
+    | value:number - value to be rounded
+    | interval:number - interval
+    |
+    | Round a value to the nearest interval.
+    ------------------------------------------ */
+
+  }, {
+    key: "roundToNearestInterval",
+    value: function roundToNearestInterval(value, interval) {
+      return Math.round(value / interval) * interval;
+    }
+    /*
+    ------------------------------------------
+    | intersectSphere:boolean - returns if intersecting or not
+    |
+    | a:object - sphere 1 with radius, x, y, and z
+    | b:object - sphere 2 with radius, x, y, and z
+    |
+    | Check if two sphere are intersecting
+    | in 3D space.
+    ------------------------------------------ */
+
+  }, {
+    key: "intersectSphere",
+    value: function intersectSphere(a, b) {
+      var distance = Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) + (a.z - b.z) * (a.z - b.z));
+      return distance < a.radius + b.radius;
+    }
+    /*
+    ------------------------------------------
+    | getIndexFromCoords:number - returns index
+    |
+    | x:number - x value (column)
+    | y:number - y value (row)
+    | w:number - width of grid
+    |
+    | Convert from grid coords to index.
+    ------------------------------------------ */
+
+  }, {
+    key: "getIndexFromCoords",
+    value: function getIndexFromCoords(x, y, w) {
+      return x + y * w;
+    }
+    /*
+    ------------------------------------------
+    | getCoordsFromIndex:object - returns coords
+    |
+    | i:number - index
+    | w:number - width of grid
+    |
+    | Convert from index to grid coords.
+    ------------------------------------------ */
+
+  }, {
+    key: "getCoordsFromIndex",
+    value: function getCoordsFromIndex(i, w) {
+      return {
+        x: i % w,
+        y: Math.floor(i / w)
+      };
+    }
+  }, {
+    key: "visibleHeightAtZDepth",
+    value: function visibleHeightAtZDepth(depth, camera) {
+      // https://discourse.threejs.org/t/functions-to-calculate-the-visible-width-height-at-a-given-z-depth-from-a-perspective-camera/269
+      var cameraOffset = camera.position.z;
+      if (depth < cameraOffset) depth -= cameraOffset;else depth += cameraOffset;
+      var vFOV = camera.fov * Math.PI / 180;
+      return 2 * Math.tan(vFOV / 2) * Math.abs(depth);
+    }
+  }, {
+    key: "visibleWidthAtZDepth",
+    value: function visibleWidthAtZDepth(depth, camera) {
+      // https://discourse.threejs.org/t/functions-to-calculate-the-visible-width-height-at-a-given-z-depth-from-a-perspective-camera/269
+      var height = this.visibleHeightAtZDepth(depth, camera);
+      return height * camera.aspect;
+    }
+  }]);
+
+  return Calc;
+}();
+
+module.exports = Calc;
 
 /***/ }),
 /* 17 */
@@ -2120,27 +2120,7 @@ __webpack_require__(4);
 
 __webpack_require__(2);
 
-__webpack_require__(8); //TODO разобраться почему не работает map
-
-
-var Calc = __webpack_require__(7);
-/*class objTest {
-    constructor() {
-        this.calc = new Calc();
-        this.update();
-    }
-    update(){
-        let test = this.calc.map(430,0,2,0,1);
-        console.log('CALC - ' + test)
-    }
-
-}
-new objTest()*/
-
-/*let testObj = {};
-let testMap = testObj.map(1,2,3,4,5);
-console.log(testObj);
-console.log(testMap);*/
+__webpack_require__(7);
 
 /***/ })
 /******/ ]);

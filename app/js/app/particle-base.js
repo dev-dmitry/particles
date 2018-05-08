@@ -20,7 +20,8 @@ class ParticleBase {
 			transparent: true,
 			opacity: this.opacity,
 			depthTest: false,
-			precision: 'lowp'
+			precision: 'lowp',
+         //   wireframe: true
 		});
 		this.mesh = new THREE.Mesh(this.geometry, this.material);
 
@@ -36,3 +37,4 @@ class ParticleBase {
 }
 
 module.exports = ParticleBase;
+
