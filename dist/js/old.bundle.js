@@ -367,6 +367,7 @@ function enterCanvas(quantity, radii, durations, charges) {
   var currentDegrees = [],
       finals = [],
       clockwise = [];
+  console.log(inRad(durations[0]));
 
   for (i = 0; i < quantity; i++) {
     durations[i] = final * (durations[i] * 0.002);

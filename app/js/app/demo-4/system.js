@@ -11,7 +11,7 @@ class System extends SystemBase {
 		this.count = 1;
 		this.height = 10;
 console.log( this.particleGroup )
-		for(let i = 0; i <= this.count; i++) {
+		//for(let i = 0; i <= this.count; i++) {
 			this.particles.push(new Particle({
 				group: this.particleGroup,
 				order: 1,
@@ -31,7 +31,7 @@ console.log( this.particleGroup )
 				size: 0.1,
 				radius: 4,
 			}, this, this.loader));*/
-		}
+		//}
 
 		let lineMaterial = new THREE.LineBasicMaterial({
 			color: 0xffffff,
@@ -71,8 +71,8 @@ console.log( this.particleGroup )
 			line.geometry.vertices[1].z = p2.mesh.position.z;
 			line.geometry.verticesNeedUpdate = true;
 		}
-
-		this.particleGroup.rotation.z = Math.sin(this.loader.elapsedMilliseconds * 0.0015) * Math.PI * 0.25;
+		//TODO Движение частицы когда x или y отличны от нуля
+		//this.particleGroup.rotation.z = Math.sin(this.loader.elapsedMilliseconds * 0.0015) * Math.PI * 0.25;
 
 		if(this.exiting && !this.loader.isOrbit && !this.loader.isGrid) {
 			this.loader.camera.position.z = this.loader.cameraBaseZ - this.ease.inExpo(this.exitProgress, 0, 1, 1) * this.loader.cameraBaseZ;

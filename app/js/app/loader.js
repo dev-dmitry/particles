@@ -2,6 +2,18 @@ const Calc = require('./utils/calc');
 const Ease = require('./utils/ease');
 const AxisHelper = require('./utils/axis');
 let flag = 0;
+
+let gui = new dat.GUI();
+let position = gui.addFolder('position');
+let scale = gui.addFolder('scale');
+let rotation = gui.addFolder('rotation');
+let renderOrder = gui.addFolder('renderOrder');
+let quaternion = gui.addFolder('quaternion');
+let up = gui.addFolder('up');
+let matrix = gui.addFolder('matrix');
+let matrixWorld = gui.addFolder('matrixWorld');
+let boundingSphere = gui.addFolder('boundingSphere');
+let parameters = gui.addFolder('parameters');
 class Loader {
 
 	constructor(System) {
@@ -71,13 +83,69 @@ class Loader {
 	}
 
 	setupScene() {
-        let light = new THREE.AmbientLight(0xffffff)
 		this.scene = new THREE.Scene();
+
+        let light = new THREE.AmbientLight(0xffffff)
         this.scene.add(light)
-		let geometry = new THREE.SphereGeometry(200, 12, 12);
-		let material = new THREE.MeshBasicMaterial({color: 0x00ff00, wireframe: true});
+		let geometry = new THREE.SphereGeometry(1, 100, 100);
+		let material = new THREE.MeshBasicMaterial({color: 0xffffff, wireframe: true});
 		let mesh = new THREE.Mesh(geometry, material)
-		this.scene.add(mesh);
+        if(true){
+            position.add(mesh.position, 'x').min(-10).max(10).step(0.2);
+            position.add(mesh.position, 'y').min(-10).max(10).step(0.2);
+            position.add(mesh.position, 'z').min(-10).max(10).step(0.2);
+            scale.add(mesh.scale, 'x').min(-10).max(10).step(0.2);
+            scale.add(mesh.scale, 'y').min(-10).max(10).step(0.2);
+            scale.add(mesh.scale, 'z').min(-10).max(10).step(0.2);
+            up.add(mesh.up, 'x').min(-10).max(10).step(0.2);
+            up.add(mesh.up, 'y').min(-10).max(10).step(0.2);
+            up.add(mesh.up, 'z').min(-10).max(10).step(0.2);
+            rotation.add(mesh.rotation, '_x').min(-10).max(10).step(0.2);
+            rotation.add(mesh.rotation, '_y').min(-10).max(10).step(0.2);
+            rotation.add(mesh.rotation, '_z').min(-10).max(10).step(0.2);
+            quaternion.add(mesh.quaternion, '_x').min(-10).max(10).step(0.2);
+            quaternion.add(mesh.quaternion, '_y').min(-10).max(10).step(0.2);
+            quaternion.add(mesh.quaternion, '_z').min(-10).max(10).step(0.2);
+            quaternion.add(mesh.quaternion, '_w').min(-10).max(10).step(0.2);
+            renderOrder.add(mesh, 'renderOrder').min(-10).max(10).step(0.2);
+            matrix.add(mesh.matrix.elements, '0').min(-10).max(10).step(0.2);
+            matrix.add(mesh.matrix.elements, '1').min(-10).max(10).step(0.2);
+            matrix.add(mesh.matrix.elements, '2').min(-10).max(10).step(0.2);
+            matrix.add(mesh.matrix.elements, '3').min(-10).max(10).step(0.2);
+            matrix.add(mesh.matrix.elements, '4').min(-10).max(10).step(0.2);
+            matrix.add(mesh.matrix.elements, '5').min(-10).max(10).step(0.2);
+            matrix.add(mesh.matrix.elements, '6').min(-10).max(10).step(0.2);
+            matrix.add(mesh.matrix.elements, '7').min(-10).max(10).step(0.2);
+            matrix.add(mesh.matrix.elements, '8').min(-10).max(10).step(0.2);
+            matrix.add(mesh.matrix.elements, '9').min(-10).max(10).step(0.2);
+            matrix.add(mesh.matrix.elements, '10').min(-10).max(10).step(0.2);
+            matrix.add(mesh.matrix.elements, '11').min(-10).max(10).step(0.2);
+            matrix.add(mesh.matrix.elements, '12').min(-10).max(10).step(0.2);
+            matrix.add(mesh.matrix.elements, '13').min(-10).max(10).step(0.2);
+            matrix.add(mesh.matrix.elements, '14').min(-10).max(10).step(0.2);
+            matrix.add(mesh.matrix.elements, '15').min(-10).max(10).step(0.2);
+            matrixWorld.add(mesh.matrixWorld.elements, '0').min(-10).max(10).step(0.2);
+            matrixWorld.add(mesh.matrixWorld.elements, '1').min(-10).max(10).step(0.2);
+            matrixWorld.add(mesh.matrixWorld.elements, '2').min(-10).max(10).step(0.2);
+            matrixWorld.add(mesh.matrixWorld.elements, '3').min(-10).max(10).step(0.2);
+            matrixWorld.add(mesh.matrixWorld.elements, '4').min(-10).max(10).step(0.2);
+            matrixWorld.add(mesh.matrixWorld.elements, '5').min(-10).max(10).step(0.2);
+            matrixWorld.add(mesh.matrixWorld.elements, '6').min(-10).max(10).step(0.2);
+            matrixWorld.add(mesh.matrixWorld.elements, '7').min(-10).max(10).step(0.2);
+            matrixWorld.add(mesh.matrixWorld.elements, '8').min(-10).max(10).step(0.2);
+            matrixWorld.add(mesh.matrixWorld.elements, '9').min(-10).max(10).step(0.2);
+            matrixWorld.add(mesh.matrixWorld.elements, '10').min(-10).max(10).step(0.2);
+            matrixWorld.add(mesh.matrixWorld.elements, '11').min(-10).max(10).step(0.2);
+            matrixWorld.add(mesh.matrixWorld.elements, '12').min(-10).max(10).step(0.2);
+            matrixWorld.add(mesh.matrixWorld.elements, '13').min(-10).max(10).step(0.2);
+            matrixWorld.add(mesh.matrixWorld.elements, '14').min(-10).max(10).step(0.2);
+            matrixWorld.add(mesh.matrixWorld.elements, '15').min(-10).max(10).step(0.2);
+            parameters.add(mesh.geometry.parameters, 'heightSegments').min(-50).max(50).step(1);
+            parameters.add(mesh.geometry.parameters, 'radius').min(-50).max(50).step(1);
+            parameters.add(mesh.geometry.parameters, 'widthSegments').min(-50).max(50).step(1);
+        }
+
+		//this.scene.add(mesh);
 	}
 
 	setupCamera() {

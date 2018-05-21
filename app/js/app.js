@@ -6,8 +6,8 @@ let fps = 60,
 export function enterCanvas ( quantity, radii, durations, charges ) {
 	let canvas = document.getElementById('particles'),
 		ctx = canvas.getContext('2d'),
-		baseX = canvas.width / 2, 
-		baseY = canvas.height / 2, 
+		baseX = canvas.width / 2,
+		baseY = canvas.height / 2,
 		gapsDegrees = 360 / quantity,
 		startAngle = 0,
 		i = 0,
@@ -15,7 +15,7 @@ export function enterCanvas ( quantity, radii, durations, charges ) {
 		stopRun,
 		degree;
 	let currentDegrees = [], finals = [], clockwise = [];
-
+	console.log(inRad(durations[0]));
 	for ( i = 0; i < quantity; i++ ) {
 		durations[i] = final * (durations[i] * 0.002);
 		currentDegrees.push(0);
@@ -49,13 +49,13 @@ export function enterCanvas ( quantity, radii, durations, charges ) {
 			}, 1000 / fps );
 		}else{
 			return false;
-		}	
+		}
 	}
 	function addCircles( startAngle, currentDegrees ){
 		degree = 0;
 		i = 0;
 		while( i < quantity ){
-			degree += gapsDegrees; 
+			degree += gapsDegrees;
 			ctx.circle( baseX, baseY, radii[i], radii[i], inRad(degree),
 				startAngle, currentDegrees[i], clockwise[i], baseX - radii[i], baseY );
 			i++;
@@ -66,11 +66,11 @@ export function enterCanvas ( quantity, radii, durations, charges ) {
 		degree = 0;
 		i = 0;
 		while( i < quantity ) {
-			degree += gapsDegrees; 
+			degree += gapsDegrees;
 			vx = Math.cos(currentDegrees[i]) * radii[i];
 			vy = Math.sin(currentDegrees[i]) * radii[i];
 			stop( i, degree, vx, vy );
-			i++;	
+			i++;
 		}
 	}
 	function stop( i, degree, vx, vy ) {

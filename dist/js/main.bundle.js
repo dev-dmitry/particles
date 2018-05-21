@@ -345,6 +345,7 @@ function enterCanvas(quantity, radii, durations, charges) {
   var currentDegrees = [],
       finals = [],
       clockwise = [];
+  console.log(inRad(durations[0]));
 
   for (i = 0; i < quantity; i++) {
     durations[i] = final * (durations[i] * 0.002);
@@ -516,27 +517,26 @@ function (_ParticleBase) {
     _this.config = config;
     _this.radius = config.radius;
     _this.order = config.order; //this.alternate = config.alternate;
-    //this.osc = new Osc(this.order, 0.015, true, false);
 
-    _this.reset(); //TODO добавить в gui объект отвечающий за параметры движения частицы
+    _this.osc = new Osc(_this.order, 0.015, true, false);
 
+    _this.reset();
 
-    var gui = new dat.GUI();
-    gui.add(_this.config.group.quaternion, '_z').min(-4).max(4).step(0.1);
     return _this;
   }
 
   _createClass(Particle, [{
     key: "reset",
     value: function reset() {
-      _get(Particle.prototype.__proto__ || Object.getPrototypeOf(Particle.prototype), "reset", this).call(this); //	this.osc.reset();
+      _get(Particle.prototype.__proto__ || Object.getPrototypeOf(Particle.prototype), "reset", this).call(this);
 
+      this.osc.reset();
     }
   }, {
     key: "update",
     value: function update() {
       if (test) {
-        console.log(this.config);
+        //	console.log(this.config);
         flag++;
         if (flag > 5) test = false;
       } //this.osc.update(this.loader.timescale);
@@ -555,17 +555,22 @@ function (_ParticleBase) {
       var z = (Math.sin(angle) + Math.cos(angle)) * this.radius;
       this.mesh.position.x = x;
       this.mesh.position.y = y;
-      this.mesh.position.z = z; //	let scale = 0.1 + (this.osc.val(this.ease.inOutExpo)) * 0.2;
+      /* this.mesh.position.z = z;*/
+      //	let scale = 0.1 + (this.osc.val(this.ease.inOutExpo)) * 0.2;
 
       /*if(this.alternate) {
       	scale = 0.1 + (1 - this.osc.val(this.ease.inOutExpo)) * 0.2;
       }*/
-      //this.mesh.scale.set(scale, scale, scale);
+      //	this.mesh.scale.set(scale, scale, scale);
     }
   }]);
 
   return Particle;
 }(ParticleBase);
+
+function inRad(num) {
+  return num * Math.PI / 180;
+}
 
 module.exports = Particle;
 
@@ -606,30 +611,29 @@ function (_SystemBase) {
     _this.lines = [];
     _this.count = 1;
     _this.height = 10;
-    console.log(_this.particleGroup);
+    console.log(_this.particleGroup); //for(let i = 0; i <= this.count; i++) {
 
-    for (var i = 0; i <= _this.count; i++) {
-      _this.particles.push(new Particle({
-        group: _this.particleGroup,
-        order: 1,
-        alternate: false,
-        color: 0xffffff,
-        opacity: 1,
-        size: 0.1,
-        //TODO не влияет на размер
-        radius: 4
-      }, _this, _this.loader));
-      /*this.particles.push(new Particle({
-      	group: this.particleGroup,
-      	order: i / (this.count - 1),
-      	alternate: true,
-      	color: 0xffffff,
-      	opacity: 1,
-      	size: 0.1,
-      	radius: 4,
-      }, this, this.loader));*/
+    _this.particles.push(new Particle({
+      group: _this.particleGroup,
+      order: 1,
+      alternate: false,
+      color: 0xffffff,
+      opacity: 1,
+      size: 0.1,
+      //TODO не влияет на размер
+      radius: 4
+    }, _this, _this.loader));
+    /*this.particles.push(new Particle({
+    	group: this.particleGroup,
+    	order: i / (this.count - 1),
+    	alternate: true,
+    	color: 0xffffff,
+    	opacity: 1,
+    	size: 0.1,
+    	radius: 4,
+    }, this, this.loader));*/
+    //}
 
-    }
 
     var lineMaterial = new THREE.LineBasicMaterial({
       color: 0xffffff,
@@ -637,7 +641,7 @@ function (_SystemBase) {
       transparent: true
     });
 
-    for (var _i = 0; _i < _this.count; _i++) {
+    for (var i = 0; i < _this.count; i++) {
       var lineGeometry = new THREE.Geometry();
       lineGeometry.vertices.push(new THREE.Vector3(), new THREE.Vector3());
       var lineMesh = new THREE.Line(lineGeometry, lineMaterial);
@@ -672,9 +676,9 @@ function (_SystemBase) {
         line.geometry.vertices[1].y = p2.mesh.position.y;
         line.geometry.vertices[1].z = p2.mesh.position.z;
         line.geometry.verticesNeedUpdate = true;
-      }
+      } //TODO Движение частицы когда x или y отличны от нуля
+      //this.particleGroup.rotation.z = Math.sin(this.loader.elapsedMilliseconds * 0.0015) * Math.PI * 0.25;
 
-      this.particleGroup.rotation.z = Math.sin(this.loader.elapsedMilliseconds * 0.0015) * Math.PI * 0.25;
 
       if (this.exiting && !this.loader.isOrbit && !this.loader.isGrid) {
         this.loader.camera.position.z = this.loader.cameraBaseZ - this.ease.inExpo(this.exitProgress, 0, 1, 1) * this.loader.cameraBaseZ;
@@ -704,6 +708,17 @@ var Ease = __webpack_require__(27);
 var AxisHelper = __webpack_require__(25);
 
 var flag = 0;
+var gui = new dat.GUI();
+var position = gui.addFolder('position');
+var scale = gui.addFolder('scale');
+var rotation = gui.addFolder('rotation');
+var renderOrder = gui.addFolder('renderOrder');
+var quaternion = gui.addFolder('quaternion');
+var up = gui.addFolder('up');
+var matrix = gui.addFolder('matrix');
+var matrixWorld = gui.addFolder('matrixWorld');
+var boundingSphere = gui.addFolder('boundingSphere');
+var parameters = gui.addFolder('parameters');
 
 var Loader =
 /*#__PURE__*/
@@ -776,16 +791,71 @@ function () {
   }, {
     key: "setupScene",
     value: function setupScene() {
-      var light = new THREE.AmbientLight(0xffffff);
       this.scene = new THREE.Scene();
+      var light = new THREE.AmbientLight(0xffffff);
       this.scene.add(light);
-      var geometry = new THREE.SphereGeometry(200, 12, 12);
+      var geometry = new THREE.SphereGeometry(1, 100, 100);
       var material = new THREE.MeshBasicMaterial({
-        color: 0x00ff00,
+        color: 0xffffff,
         wireframe: true
       });
       var mesh = new THREE.Mesh(geometry, material);
-      this.scene.add(mesh);
+
+      if (true) {
+        position.add(mesh.position, 'x').min(-10).max(10).step(0.2);
+        position.add(mesh.position, 'y').min(-10).max(10).step(0.2);
+        position.add(mesh.position, 'z').min(-10).max(10).step(0.2);
+        scale.add(mesh.scale, 'x').min(-10).max(10).step(0.2);
+        scale.add(mesh.scale, 'y').min(-10).max(10).step(0.2);
+        scale.add(mesh.scale, 'z').min(-10).max(10).step(0.2);
+        up.add(mesh.up, 'x').min(-10).max(10).step(0.2);
+        up.add(mesh.up, 'y').min(-10).max(10).step(0.2);
+        up.add(mesh.up, 'z').min(-10).max(10).step(0.2);
+        rotation.add(mesh.rotation, '_x').min(-10).max(10).step(0.2);
+        rotation.add(mesh.rotation, '_y').min(-10).max(10).step(0.2);
+        rotation.add(mesh.rotation, '_z').min(-10).max(10).step(0.2);
+        quaternion.add(mesh.quaternion, '_x').min(-10).max(10).step(0.2);
+        quaternion.add(mesh.quaternion, '_y').min(-10).max(10).step(0.2);
+        quaternion.add(mesh.quaternion, '_z').min(-10).max(10).step(0.2);
+        quaternion.add(mesh.quaternion, '_w').min(-10).max(10).step(0.2);
+        renderOrder.add(mesh, 'renderOrder').min(-10).max(10).step(0.2);
+        matrix.add(mesh.matrix.elements, '0').min(-10).max(10).step(0.2);
+        matrix.add(mesh.matrix.elements, '1').min(-10).max(10).step(0.2);
+        matrix.add(mesh.matrix.elements, '2').min(-10).max(10).step(0.2);
+        matrix.add(mesh.matrix.elements, '3').min(-10).max(10).step(0.2);
+        matrix.add(mesh.matrix.elements, '4').min(-10).max(10).step(0.2);
+        matrix.add(mesh.matrix.elements, '5').min(-10).max(10).step(0.2);
+        matrix.add(mesh.matrix.elements, '6').min(-10).max(10).step(0.2);
+        matrix.add(mesh.matrix.elements, '7').min(-10).max(10).step(0.2);
+        matrix.add(mesh.matrix.elements, '8').min(-10).max(10).step(0.2);
+        matrix.add(mesh.matrix.elements, '9').min(-10).max(10).step(0.2);
+        matrix.add(mesh.matrix.elements, '10').min(-10).max(10).step(0.2);
+        matrix.add(mesh.matrix.elements, '11').min(-10).max(10).step(0.2);
+        matrix.add(mesh.matrix.elements, '12').min(-10).max(10).step(0.2);
+        matrix.add(mesh.matrix.elements, '13').min(-10).max(10).step(0.2);
+        matrix.add(mesh.matrix.elements, '14').min(-10).max(10).step(0.2);
+        matrix.add(mesh.matrix.elements, '15').min(-10).max(10).step(0.2);
+        matrixWorld.add(mesh.matrixWorld.elements, '0').min(-10).max(10).step(0.2);
+        matrixWorld.add(mesh.matrixWorld.elements, '1').min(-10).max(10).step(0.2);
+        matrixWorld.add(mesh.matrixWorld.elements, '2').min(-10).max(10).step(0.2);
+        matrixWorld.add(mesh.matrixWorld.elements, '3').min(-10).max(10).step(0.2);
+        matrixWorld.add(mesh.matrixWorld.elements, '4').min(-10).max(10).step(0.2);
+        matrixWorld.add(mesh.matrixWorld.elements, '5').min(-10).max(10).step(0.2);
+        matrixWorld.add(mesh.matrixWorld.elements, '6').min(-10).max(10).step(0.2);
+        matrixWorld.add(mesh.matrixWorld.elements, '7').min(-10).max(10).step(0.2);
+        matrixWorld.add(mesh.matrixWorld.elements, '8').min(-10).max(10).step(0.2);
+        matrixWorld.add(mesh.matrixWorld.elements, '9').min(-10).max(10).step(0.2);
+        matrixWorld.add(mesh.matrixWorld.elements, '10').min(-10).max(10).step(0.2);
+        matrixWorld.add(mesh.matrixWorld.elements, '11').min(-10).max(10).step(0.2);
+        matrixWorld.add(mesh.matrixWorld.elements, '12').min(-10).max(10).step(0.2);
+        matrixWorld.add(mesh.matrixWorld.elements, '13').min(-10).max(10).step(0.2);
+        matrixWorld.add(mesh.matrixWorld.elements, '14').min(-10).max(10).step(0.2);
+        matrixWorld.add(mesh.matrixWorld.elements, '15').min(-10).max(10).step(0.2);
+        parameters.add(mesh.geometry.parameters, 'heightSegments').min(-50).max(50).step(1);
+        parameters.add(mesh.geometry.parameters, 'radius').min(-50).max(50).step(1);
+        parameters.add(mesh.geometry.parameters, 'widthSegments').min(-50).max(50).step(1);
+      } //this.scene.add(mesh);
+
     }
   }, {
     key: "setupCamera",
@@ -1042,6 +1112,19 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+//TODO добавить в gui объект отвечающий за параметры движения частицы
+var gui = new dat.GUI();
+var position = gui.addFolder('position');
+var scale = gui.addFolder('scale');
+var rotation = gui.addFolder('rotation');
+var renderOrder = gui.addFolder('renderOrder');
+var quaternion = gui.addFolder('quaternion');
+var up = gui.addFolder('up');
+var matrix = gui.addFolder('matrix');
+var matrixWorld = gui.addFolder('matrixWorld');
+var boundingSphere = gui.addFolder('boundingSphere');
+var parameters = gui.addFolder('parameters');
+
 var ParticleBase =
 /*#__PURE__*/
 function () {
@@ -1065,6 +1148,8 @@ function () {
   _createClass(ParticleBase, [{
     key: "createMesh",
     value: function createMesh() {
+      var _this = this;
+
       this.geometry = this.system.sphereGeometry;
       this.material = new THREE.MeshBasicMaterial({
         color: this.color,
@@ -1075,10 +1160,74 @@ function () {
 
       });
       this.mesh = new THREE.Mesh(this.geometry, this.material);
-      this.mesh.position.x = this.x;
+      console.log(this.mesh);
+      /*this.mesh.position.x = this.x;
       this.mesh.position.y = this.y;
-      this.mesh.position.z = this.z;
+      this.mesh.position.z = this.z;*/
+
       this.mesh.scale.set(this.size, this.size, this.size);
+
+      if (true) {
+        position.add(this.mesh.position, 'x').min(-10).max(10).step(0.2);
+        position.add(this.mesh.position, 'y').min(-10).max(10).step(0.2);
+        position.add(this.mesh.position, 'z').min(-10).max(10).step(0.2);
+        scale.add(this.mesh.scale, 'x').min(-10).max(10).step(0.2);
+        scale.add(this.mesh.scale, 'y').min(-10).max(10).step(0.2);
+        scale.add(this.mesh.scale, 'z').min(-10).max(10).step(0.2);
+        up.add(this.mesh.up, 'x').min(-10).max(10).step(0.2);
+        up.add(this.mesh.up, 'y').min(-10).max(10).step(0.2);
+        up.add(this.mesh.up, 'z').min(-10).max(10).step(0.2);
+        rotation.add(this.mesh.rotation, '_x').min(-10).max(10).step(0.2);
+        rotation.add(this.mesh.rotation, '_y').min(-10).max(10).step(0.2);
+        rotation.add(this.mesh.rotation, '_z').min(-10).max(10).step(0.2);
+        quaternion.add(this.mesh.quaternion, '_x').min(-10).max(10).step(0.2);
+        quaternion.add(this.mesh.quaternion, '_y').min(-10).max(10).step(0.2);
+        quaternion.add(this.mesh.quaternion, '_z').min(-10).max(10).step(0.2);
+        quaternion.add(this.mesh.quaternion, '_w').min(-10).max(10).step(0.2);
+        renderOrder.add(this.mesh, 'renderOrder').min(-10).max(10).step(0.2);
+        matrix.add(this.mesh.matrix.elements, '0').min(-10).max(10).step(0.2);
+        matrix.add(this.mesh.matrix.elements, '1').min(-10).max(10).step(0.2);
+        matrix.add(this.mesh.matrix.elements, '2').min(-10).max(10).step(0.2);
+        matrix.add(this.mesh.matrix.elements, '3').min(-10).max(10).step(0.2);
+        matrix.add(this.mesh.matrix.elements, '4').min(-10).max(10).step(0.2);
+        matrix.add(this.mesh.matrix.elements, '5').min(-10).max(10).step(0.2);
+        matrix.add(this.mesh.matrix.elements, '6').min(-10).max(10).step(0.2);
+        matrix.add(this.mesh.matrix.elements, '7').min(-10).max(10).step(0.2);
+        matrix.add(this.mesh.matrix.elements, '8').min(-10).max(10).step(0.2);
+        matrix.add(this.mesh.matrix.elements, '9').min(-10).max(10).step(0.2);
+        matrix.add(this.mesh.matrix.elements, '10').min(-10).max(10).step(0.2);
+        matrix.add(this.mesh.matrix.elements, '11').min(-10).max(10).step(0.2);
+        matrix.add(this.mesh.matrix.elements, '12').min(-10).max(10).step(0.2);
+        matrix.add(this.mesh.matrix.elements, '13').min(-10).max(10).step(0.2);
+        matrix.add(this.mesh.matrix.elements, '14').min(-10).max(10).step(0.2);
+        matrix.add(this.mesh.matrix.elements, '15').min(-10).max(10).step(0.2);
+        matrixWorld.add(this.mesh.matrixWorld.elements, '0').min(-10).max(10).step(0.2);
+        matrixWorld.add(this.mesh.matrixWorld.elements, '1').min(-10).max(10).step(0.2);
+        matrixWorld.add(this.mesh.matrixWorld.elements, '2').min(-10).max(10).step(0.2);
+        matrixWorld.add(this.mesh.matrixWorld.elements, '3').min(-10).max(10).step(0.2);
+        matrixWorld.add(this.mesh.matrixWorld.elements, '4').min(-10).max(10).step(0.2);
+        matrixWorld.add(this.mesh.matrixWorld.elements, '5').min(-10).max(10).step(0.2);
+        matrixWorld.add(this.mesh.matrixWorld.elements, '6').min(-10).max(10).step(0.2);
+        matrixWorld.add(this.mesh.matrixWorld.elements, '7').min(-10).max(10).step(0.2);
+        matrixWorld.add(this.mesh.matrixWorld.elements, '8').min(-10).max(10).step(0.2);
+        matrixWorld.add(this.mesh.matrixWorld.elements, '9').min(-10).max(10).step(0.2);
+        matrixWorld.add(this.mesh.matrixWorld.elements, '10').min(-10).max(10).step(0.2);
+        matrixWorld.add(this.mesh.matrixWorld.elements, '11').min(-10).max(10).step(0.2);
+        matrixWorld.add(this.mesh.matrixWorld.elements, '12').min(-10).max(10).step(0.2);
+        matrixWorld.add(this.mesh.matrixWorld.elements, '13').min(-10).max(10).step(0.2);
+        matrixWorld.add(this.mesh.matrixWorld.elements, '14').min(-10).max(10).step(0.2);
+        matrixWorld.add(this.mesh.matrixWorld.elements, '15').min(-10).max(10).step(0.2);
+        parameters.add(this.mesh.geometry.parameters, 'heightSegments').min(-50).max(50).step(1);
+        parameters.add(this.mesh.geometry.parameters, 'radius').min(-50).max(50).step(1);
+        parameters.add(this.mesh.geometry.parameters, 'widthSegments').min(-50).max(50).step(1);
+        setTimeout(function () {
+          boundingSphere.add(_this.mesh.geometry.boundingSphere.center, 'x').min(-10).max(10).step(0.2);
+          boundingSphere.add(_this.mesh.geometry.boundingSphere.center, 'y').min(-10).max(10).step(0.2);
+          boundingSphere.add(_this.mesh.geometry.boundingSphere.center, 'z').min(-10).max(10).step(0.2);
+          boundingSphere.add(_this.mesh.geometry.boundingSphere, 'radius').min(-10).max(10).step(0.2);
+        }, 2000);
+      }
+
       this.group.add(this.mesh);
     }
   }, {
@@ -1115,7 +1264,6 @@ function () {
     this.center = new THREE.Vector3();
     this.particles = [];
     this.particleGroup = new THREE.Object3D();
-    this.particleGroup.position.z = -5.7;
     this.particleGroup.scale.set(0.0001, 0.0001, 0.0001);
     this.loader.scene.add(this.particleGroup);
     this.entering = true;
