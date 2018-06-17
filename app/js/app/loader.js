@@ -2,16 +2,7 @@ const Calc = require('./utils/calc');
 const Ease = require('./utils/ease');
 const AxisHelper = require('./utils/axis');
 let gui = new dat.GUI();
-let increase = 0.05;
-let counter = 0;
-let y;
-let meshCircle = new THREE.Object3D();
-meshCircle.add( new THREE.Line(
-    new THREE.Geometry(),
-    new THREE.LineBasicMaterial( {
-        color: 0xffffff,
-    } )
-) );
+
 class Loader {
 
 	constructor(System) {
@@ -79,7 +70,7 @@ class Loader {
 
 
 
-		this.scene.add(meshCircle)
+
 
 
 
@@ -289,66 +280,8 @@ class Loader {
 		}
 
 
-        function updateGroupGeometry( mesh, geometry ) {
-            mesh.children[ 0 ].geometry.dispose();
-            mesh.children[ 0 ].geometry = geometry;
-        }
-        if (counter <= 2.04){
-			counter = counter > 2 ? 2 : counter;
-            EllipseCurve(meshCircle);
-		}
 
-        function EllipseCurve( mesh ) {
-            y = counter
-            counter += increase
-            var data = {
-                ax: 0, aY: 0,
-                xRadius: 1, yRadius: 1,
-                aStartAngle: 0, aEndAngle: Math.PI * y,
-                aClockwise: false,
-                aRotation: 0,
-            };
-            console.log( 'test' )
-            function generateGeometry() {
-                var curve = new THREE.EllipseCurve(
-                    data.ax, data.aY, data.xRadius, data.yRadius, data.aStartAngle,
-                    data.aEndAngle, data.aClockwise, data.aRotation
-                );
-                var points = curve.getPoints( 50 );
-                var geometry = new THREE.BufferGeometry(16).setFromPoints( points );
-                updateGroupGeometry( mesh, geometry );
-            }
 
-            generateGeometry();
-        }
-
-        function shape( mesh ) {
-            y = counter
-            counter += increase
-            let data = {
-                ax: 0, aY: 0,
-                radius: 4,
-                aStartAngle: 0, aEndAngle: Math.PI * y,
-                aClockwise: false,
-            };
-            function generateGeometry() {
-                let shape = new THREE.Shape();
-                shape.absarc( data.ax, data.aY, data.radius, data.aStartAngle,
-                    data.aEndAngle, data.aClockwise
-                );
-                let spacedPoints = shape.createSpacedPointsGeometry(360);
-                let vertexColors = [];
-                spacedPoints.vertices.forEach( function( item, index ){
-                    vertexColors.push( new THREE.Color( 0xff0000 ) )
-                });
-                spacedPoints.colors = vertexColors;
-                updateGroupGeometry( mesh, spacedPoints );
-            }
-         /*   let folder = gui.addFolder( 'THREE.Shape' );
-            folder.add( data, 'aStartAngle', 0, Math.PI * 2 ).onChange( generateGeometry );
-            folder.add( data, 'aEndAngle', 0, Math.PI * 2 ).onChange( generateGeometry );*/
-            generateGeometry();
-        }
 
 		this.deltaTimeSeconds *= this.timescale;
 		this.deltaTimeMilliseconds = this.deltaTimeSeconds * 1000;

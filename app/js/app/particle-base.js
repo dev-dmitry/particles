@@ -1,4 +1,3 @@
-//TODO добавить в gui объект отвечающий за параметры движения частицы
 let gui = new dat.GUI();
 /*let position = gui.addFolder('position');
 let scale = gui.addFolder('scale');
@@ -98,6 +97,8 @@ class ParticleBase {
             parameters.add(this.mesh.geometry.parameters, 'widthSegments').min(-50).max(50).step(1);
         }*/
 		this.group.add(this.mesh);
+
+
 
 	}
 	reset() {}

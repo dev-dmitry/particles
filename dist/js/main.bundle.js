@@ -502,8 +502,6 @@ var ParticleBase = __webpack_require__(23);
 
 var Osc = __webpack_require__(28);
 
-var test = true;
-var flag = 0;
 var angle = 0;
 
 var Particle =
@@ -539,29 +537,20 @@ function (_ParticleBase) {
   }, {
     key: "update",
     value: function update() {
-      if (test) {
-        flag++;
-        if (flag > 2) test = false;
-      } //this.osc.update(this.loader.timescale);
+      //this.osc.update(this.loader.timescale);
       //let angle = this.calc.map(this.order, 0, 1, -Math.cos(this.loader.elapsedMilliseconds * 0.0015) * (Math.PI * 1.5), Math.sin(this.loader.elapsedMilliseconds * 0.0015) * (Math.PI * 1.5));
-
-
       var x = 0.12 * Math.sin(angle);
       var z = 0.3 * Math.sin(angle);
-      var y = 0.12 * Math.cos(angle); //this.mesh.position.x += x;
-      // this.mesh.position.z += z;
-      //this.mesh.position.y += y;
+      var y = 0.12 * Math.cos(angle);
+      this.mesh.position.x += x; // this.mesh.position.z += z;
 
+      this.mesh.position.y += y;
       angle += Math.PI / 180 * 2; //this.mesh.rotation.set(scale, scale, scale);
     }
   }]);
 
   return Particle;
 }(ParticleBase);
-
-function inRad(num) {
-  return num * Math.PI / 180;
-}
 
 module.exports = Particle;
 
@@ -586,6 +575,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var SystemBase = __webpack_require__(24);
 
 var Particle = __webpack_require__(20);
+
+var increase = 0.05;
+var counter = 0;
+var y;
 
 var System =
 /*#__PURE__*/
@@ -614,23 +607,24 @@ function (_SystemBase) {
       size: 0.1,
       radius: 4
     }, _this, _this.loader)); //}
+    //???
 
-
-    console.log(_this.particles); //???
-
-    var lineMaterial = new THREE.LineBasicMaterial({
-      color: 0xffffff,
-      opacity: 0.5,
-      transparent: true
+    /*let lineMaterial = new THREE.LineBasicMaterial({
+    	color: 0xffffff,
+    	opacity: 0.5,
+    	transparent: true
     });
+    for(let i = 0; i < this.count; i++) {
+    	let lineGeometry = new THREE.Geometry();
+    	lineGeometry.vertices.push(
+    		new THREE.Vector3(),
+    		new THREE.Vector3()
+    	);
+    	let lineMesh = new THREE.Line(lineGeometry, lineMaterial);
+    	/!*this.particleGroup.add(lineMesh);
+    	this.lines.push(lineMesh);*!/
+    }*/
 
-    for (var i = 0; i < _this.count; i++) {
-      var lineGeometry = new THREE.Geometry();
-      lineGeometry.vertices.push(new THREE.Vector3(), new THREE.Vector3());
-      var lineMesh = new THREE.Line(lineGeometry, lineMaterial);
-      /*this.particleGroup.add(lineMesh);
-      this.lines.push(lineMesh);*/
-    }
 
     return _this;
   }
@@ -640,30 +634,61 @@ function (_SystemBase) {
     value: function update() {
       _get(System.prototype.__proto__ || Object.getPrototypeOf(System.prototype), "update", this).call(this);
 
-      var i = this.particles.length;
-
-      while (i--) {
-        this.particles[i].update();
+      if (counter <= 2.04) {
+        counter = counter > 2 ? 2 : counter;
+        EllipseCurve(this.meshCircle);
       }
 
-      var j = this.lines.length;
+      function EllipseCurve(mesh) {
+        y = counter;
+        counter += increase;
+        var data = {
+          ax: 0,
+          aY: 0,
+          xRadius: 1,
+          yRadius: 1,
+          aStartAngle: 0,
+          aEndAngle: Math.PI * y,
+          aClockwise: false,
+          aRotation: 0
+        };
 
-      while (j--) {
-        var p1 = this.particles[j * 2];
-        var p2 = this.particles[j * 2 + 1];
-        var line = this.lines[j];
-        line.geometry.vertices[0].x = p1.mesh.position.x;
-        line.geometry.vertices[0].y = p1.mesh.position.y;
-        line.geometry.vertices[0].z = p1.mesh.position.z;
-        line.geometry.vertices[1].x = p2.mesh.position.x;
-        line.geometry.vertices[1].y = p2.mesh.position.y;
-        line.geometry.vertices[1].z = p2.mesh.position.z;
-        line.geometry.verticesNeedUpdate = true;
+        function generateGeometry() {
+          var curve = new THREE.EllipseCurve(data.ax, data.aY, data.xRadius, data.yRadius, data.aStartAngle, data.aEndAngle, data.aClockwise, data.aRotation);
+          var points = curve.getPoints(50);
+          var geometry = new THREE.BufferGeometry(16).setFromPoints(points);
+          updateGroupGeometry(mesh, geometry);
+        }
+
+        generateGeometry();
       }
 
-      if (this.exiting && !this.loader.isOrbit && !this.loader.isGrid) {
-        this.loader.camera.position.z = this.loader.cameraBaseZ - this.ease.inExpo(this.exitProgress, 0, 1, 1) * this.loader.cameraBaseZ;
+      function updateGroupGeometry(mesh, geometry) {
+        mesh.children[0].geometry.dispose();
+        mesh.children[0].geometry = geometry;
       }
+      /*let i = this.particles.length;
+      while(i--) {
+      	this.particles[i].update();
+      }
+      	let j = this.lines.length;*/
+
+      /*while(j--) {
+      	let p1 = this.particles[j * 2];
+      	let p2 = this.particles[j * 2 + 1];
+      	let line = this.lines[j];
+      	line.geometry.vertices[0].x = p1.mesh.position.x;
+      	line.geometry.vertices[0].y = p1.mesh.position.y;
+      	line.geometry.vertices[0].z = p1.mesh.position.z;
+      	line.geometry.vertices[1].x = p2.mesh.position.x;
+      	line.geometry.vertices[1].y = p2.mesh.position.y;
+      	line.geometry.vertices[1].z = p2.mesh.position.z;
+      	line.geometry.verticesNeedUpdate = true;
+      }
+      if(this.exiting && !this.loader.isOrbit && !this.loader.isGrid) {
+      	this.loader.camera.position.z = this.loader.cameraBaseZ - this.ease.inExpo(this.exitProgress, 0, 1, 1) * this.loader.cameraBaseZ;
+      }*/
+
     }
   }]);
 
@@ -689,13 +714,6 @@ var Ease = __webpack_require__(27);
 var AxisHelper = __webpack_require__(25);
 
 var gui = new dat.GUI();
-var increase = 0.05;
-var counter = 0;
-var y;
-var meshCircle = new THREE.Object3D();
-meshCircle.add(new THREE.Line(new THREE.Geometry(), new THREE.LineBasicMaterial({
-  color: 0xffffff
-})));
 
 var Loader =
 /*#__PURE__*/
@@ -767,7 +785,6 @@ function () {
               let mesh = new THREE.Mesh(geometry, material);
               this.scene.add(mesh);*/
 
-      this.scene.add(meshCircle);
       /*    function CircleGeometry( mesh ) {
               var data = {
                   radius: 2,
@@ -973,72 +990,6 @@ function () {
         this.diffTime = 0;
       }
 
-      function updateGroupGeometry(mesh, geometry) {
-        mesh.children[0].geometry.dispose();
-        mesh.children[0].geometry = geometry;
-      }
-
-      if (counter <= 2.04) {
-        counter = counter > 2 ? 2 : counter;
-        EllipseCurve(meshCircle);
-      }
-
-      function EllipseCurve(mesh) {
-        y = counter;
-        counter += increase;
-        var data = {
-          ax: 0,
-          aY: 0,
-          xRadius: 1,
-          yRadius: 1,
-          aStartAngle: 0,
-          aEndAngle: Math.PI * y,
-          aClockwise: false,
-          aRotation: 0
-        };
-        console.log('test');
-
-        function generateGeometry() {
-          var curve = new THREE.EllipseCurve(data.ax, data.aY, data.xRadius, data.yRadius, data.aStartAngle, data.aEndAngle, data.aClockwise, data.aRotation);
-          var points = curve.getPoints(50);
-          var geometry = new THREE.BufferGeometry(16).setFromPoints(points);
-          updateGroupGeometry(mesh, geometry);
-        }
-
-        generateGeometry();
-      }
-
-      function shape(mesh) {
-        y = counter;
-        counter += increase;
-        var data = {
-          ax: 0,
-          aY: 0,
-          radius: 4,
-          aStartAngle: 0,
-          aEndAngle: Math.PI * y,
-          aClockwise: false
-        };
-
-        function generateGeometry() {
-          var shape = new THREE.Shape();
-          shape.absarc(data.ax, data.aY, data.radius, data.aStartAngle, data.aEndAngle, data.aClockwise);
-          var spacedPoints = shape.createSpacedPointsGeometry(360);
-          var vertexColors = [];
-          spacedPoints.vertices.forEach(function (item, index) {
-            vertexColors.push(new THREE.Color(0xff0000));
-          });
-          spacedPoints.colors = vertexColors;
-          updateGroupGeometry(mesh, spacedPoints);
-        }
-        /*   let folder = gui.addFolder( 'THREE.Shape' );
-           folder.add( data, 'aStartAngle', 0, Math.PI * 2 ).onChange( generateGeometry );
-           folder.add( data, 'aEndAngle', 0, Math.PI * 2 ).onChange( generateGeometry );*/
-
-
-        generateGeometry();
-      }
-
       this.deltaTimeSeconds *= this.timescale;
       this.deltaTimeMilliseconds = this.deltaTimeSeconds * 1000;
       this.deltaTimeNormal = this.deltaTimeMilliseconds / (1000 / 60);
@@ -1221,7 +1172,6 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-//TODO добавить в gui объект отвечающий за параметры движения частицы
 var gui = new dat.GUI();
 /*let position = gui.addFolder('position');
 let scale = gui.addFolder('scale');
@@ -1366,6 +1316,11 @@ function () {
     this.particleGroup = new THREE.Object3D();
     this.particleGroup.scale.set(0.0001, 0.0001, 0.0001);
     this.loader.scene.add(this.particleGroup);
+    this.meshCircle = new THREE.Object3D();
+    this.meshCircle.add(new THREE.Line(new THREE.Geometry(), new THREE.LineBasicMaterial({
+      color: 0xffffff
+    })));
+    this.loader.scene.add(this.meshCircle);
     this.entering = true;
     this.enterProgress = 0;
     this.enterRate = 0.1;

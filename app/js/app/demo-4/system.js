@@ -1,6 +1,10 @@
 const SystemBase = require('../system-base');
 const Particle = require('./particle');
 
+let increase = 0.05;
+let counter = 0;
+let y;
+
 class System extends SystemBase {
 	constructor(loader) {
 		super(loader);
@@ -21,11 +25,9 @@ class System extends SystemBase {
 				radius: 4,
 			}, this, this.loader));
 		//}
-		console.log( this.particles )
-
 
 		//???
-		let lineMaterial = new THREE.LineBasicMaterial({
+		/*let lineMaterial = new THREE.LineBasicMaterial({
 			color: 0xffffff,
 			opacity: 0.5,
 			transparent: true
@@ -37,20 +39,55 @@ class System extends SystemBase {
 				new THREE.Vector3()
 			);
 			let lineMesh = new THREE.Line(lineGeometry, lineMaterial);
-			/*this.particleGroup.add(lineMesh);
-			this.lines.push(lineMesh);*/
-		}
+			/!*this.particleGroup.add(lineMesh);
+			this.lines.push(lineMesh);*!/
+		}*/
 	}
 
 	update() {
 		super.update();
-		let i = this.particles.length;
+
+
+
+        if (counter <= 2.04){
+            counter = counter > 2 ? 2 : counter;
+            EllipseCurve(this.meshCircle);
+        }
+        function EllipseCurve( mesh ) {
+            y = counter;
+            counter += increase;
+            var data = {
+                ax: 0, aY: 0,
+                xRadius: 1, yRadius: 1,
+                aStartAngle: 0, aEndAngle: Math.PI * y,
+                aClockwise: false,
+                aRotation: 0,
+            };
+            function generateGeometry() {
+                var curve = new THREE.EllipseCurve(
+                    data.ax, data.aY, data.xRadius, data.yRadius, data.aStartAngle,
+                    data.aEndAngle, data.aClockwise, data.aRotation
+                );
+                var points = curve.getPoints( 50 );
+                var geometry = new THREE.BufferGeometry(16).setFromPoints( points );
+                updateGroupGeometry( mesh, geometry );
+            }
+            generateGeometry();
+        }
+        function updateGroupGeometry( mesh, geometry ) {
+            mesh.children[ 0 ].geometry.dispose();
+            mesh.children[ 0 ].geometry = geometry;
+        }
+
+
+
+		/*let i = this.particles.length;
 		while(i--) {
 			this.particles[i].update();
 		}
 
-		let j = this.lines.length;
-		while(j--) {
+		let j = this.lines.length;*/
+		/*while(j--) {
 			let p1 = this.particles[j * 2];
 			let p2 = this.particles[j * 2 + 1];
 			let line = this.lines[j];
@@ -64,7 +101,7 @@ class System extends SystemBase {
 		}
 		if(this.exiting && !this.loader.isOrbit && !this.loader.isGrid) {
 			this.loader.camera.position.z = this.loader.cameraBaseZ - this.ease.inExpo(this.exitProgress, 0, 1, 1) * this.loader.cameraBaseZ;
-		}
+		}*/
 	}
 
 }

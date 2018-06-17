@@ -14,6 +14,18 @@ class SystemBase {
 		this.particleGroup.scale.set(0.0001, 0.0001, 0.0001);
 		this.loader.scene.add(this.particleGroup);
 
+		this.meshCircle = new THREE.Object3D();
+        this.meshCircle.add( new THREE.Line(
+            new THREE.Geometry(),
+            new THREE.LineBasicMaterial( {
+                color: 0xffffff,
+            } )
+        ) );
+        this.loader.scene.add(this.meshCircle)
+
+
+
+
 		this.entering = true;
 		this.enterProgress = 0;
 		this.enterRate = 0.1;
