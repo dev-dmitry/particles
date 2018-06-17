@@ -364,6 +364,8 @@ function enterCanvas(quantity, radii, durations, charges) {
       sumCharges,
       stopRun,
       degree;
+  console.log(canvas);
+  console.log(ctx);
   var currentDegrees = [],
       finals = [],
       clockwise = [];

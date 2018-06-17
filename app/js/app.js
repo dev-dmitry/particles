@@ -14,6 +14,9 @@ export function enterCanvas ( quantity, radii, durations, charges ) {
 		sumCharges,
 		stopRun,
 		degree;
+
+	console.log( canvas )
+	console.log( ctx )
 	let currentDegrees = [], finals = [], clockwise = [];
 	console.log(inRad(durations[0]));
 	for ( i = 0; i < quantity; i++ ) {

@@ -1,19 +1,17 @@
 const Calc = require('./utils/calc');
 const Ease = require('./utils/ease');
 const AxisHelper = require('./utils/axis');
-let flag = 0;
-
 let gui = new dat.GUI();
-let position = gui.addFolder('position');
-let scale = gui.addFolder('scale');
-let rotation = gui.addFolder('rotation');
-let renderOrder = gui.addFolder('renderOrder');
-let quaternion = gui.addFolder('quaternion');
-let up = gui.addFolder('up');
-let matrix = gui.addFolder('matrix');
-let matrixWorld = gui.addFolder('matrixWorld');
-let boundingSphere = gui.addFolder('boundingSphere');
-let parameters = gui.addFolder('parameters');
+let increase = 0.05;
+let counter = 0;
+let y;
+let meshCircle = new THREE.Object3D();
+meshCircle.add( new THREE.Line(
+    new THREE.Geometry(),
+    new THREE.LineBasicMaterial( {
+        color: 0xffffff,
+    } )
+) );
 class Loader {
 
 	constructor(System) {
@@ -53,26 +51,15 @@ class Loader {
 		this.isDebug = location.hash.indexOf('debug') > 0;
 		this.isGrid = location.hash.indexOf('grid') > 0;
 		this.isOrbit = location.hash.indexOf('orbit') > 0;
-
 		this.debugHash = '';
-
-		//if(this.isDebug) {
 			this.isGrid = true;
 			this.isOrbit = true;
-		//	this.debugHash += 'debug';
-			//this.dom.html.classList.add('is-debug');
-		/*} else {
-			this.debugHash += this.isGrid ? 'grid' : '';
-			this.debugHash += this.isOrbit ? 'orbit' : '';
-		}*/
-
 		if(this.debugHash) {
 			[].slice.call(document.querySelectorAll('.demo')).forEach((elem, i, arr) => {
 				elem.setAttribute('href', `${elem.getAttribute('href')}#${this.debugHash}`);
 			});
 		}
 	}
-
 	setupTime() {
 		this.timescale = 1;
 		this.clock = new THREE.Clock();
@@ -84,74 +71,154 @@ class Loader {
 
 	setupScene() {
 		this.scene = new THREE.Scene();
-
-        let light = new THREE.AmbientLight(0xffffff)
-        this.scene.add(light)
-		let geometry = new THREE.SphereGeometry(1, 100, 100);
+/*		let geometry = new THREE.SphereGeometry(5, 30, 30);
 		let material = new THREE.MeshBasicMaterial({color: 0xffffff, wireframe: true});
-		let mesh = new THREE.Mesh(geometry, material)
-        if(true){
-            position.add(mesh.position, 'x').min(-10).max(10).step(0.2);
-            position.add(mesh.position, 'y').min(-10).max(10).step(0.2);
-            position.add(mesh.position, 'z').min(-10).max(10).step(0.2);
-            scale.add(mesh.scale, 'x').min(-10).max(10).step(0.2);
-            scale.add(mesh.scale, 'y').min(-10).max(10).step(0.2);
-            scale.add(mesh.scale, 'z').min(-10).max(10).step(0.2);
-            up.add(mesh.up, 'x').min(-10).max(10).step(0.2);
-            up.add(mesh.up, 'y').min(-10).max(10).step(0.2);
-            up.add(mesh.up, 'z').min(-10).max(10).step(0.2);
-            rotation.add(mesh.rotation, '_x').min(-10).max(10).step(0.2);
-            rotation.add(mesh.rotation, '_y').min(-10).max(10).step(0.2);
-            rotation.add(mesh.rotation, '_z').min(-10).max(10).step(0.2);
-            quaternion.add(mesh.quaternion, '_x').min(-10).max(10).step(0.2);
-            quaternion.add(mesh.quaternion, '_y').min(-10).max(10).step(0.2);
-            quaternion.add(mesh.quaternion, '_z').min(-10).max(10).step(0.2);
-            quaternion.add(mesh.quaternion, '_w').min(-10).max(10).step(0.2);
-            renderOrder.add(mesh, 'renderOrder').min(-10).max(10).step(0.2);
-            matrix.add(mesh.matrix.elements, '0').min(-10).max(10).step(0.2);
-            matrix.add(mesh.matrix.elements, '1').min(-10).max(10).step(0.2);
-            matrix.add(mesh.matrix.elements, '2').min(-10).max(10).step(0.2);
-            matrix.add(mesh.matrix.elements, '3').min(-10).max(10).step(0.2);
-            matrix.add(mesh.matrix.elements, '4').min(-10).max(10).step(0.2);
-            matrix.add(mesh.matrix.elements, '5').min(-10).max(10).step(0.2);
-            matrix.add(mesh.matrix.elements, '6').min(-10).max(10).step(0.2);
-            matrix.add(mesh.matrix.elements, '7').min(-10).max(10).step(0.2);
-            matrix.add(mesh.matrix.elements, '8').min(-10).max(10).step(0.2);
-            matrix.add(mesh.matrix.elements, '9').min(-10).max(10).step(0.2);
-            matrix.add(mesh.matrix.elements, '10').min(-10).max(10).step(0.2);
-            matrix.add(mesh.matrix.elements, '11').min(-10).max(10).step(0.2);
-            matrix.add(mesh.matrix.elements, '12').min(-10).max(10).step(0.2);
-            matrix.add(mesh.matrix.elements, '13').min(-10).max(10).step(0.2);
-            matrix.add(mesh.matrix.elements, '14').min(-10).max(10).step(0.2);
-            matrix.add(mesh.matrix.elements, '15').min(-10).max(10).step(0.2);
-            matrixWorld.add(mesh.matrixWorld.elements, '0').min(-10).max(10).step(0.2);
-            matrixWorld.add(mesh.matrixWorld.elements, '1').min(-10).max(10).step(0.2);
-            matrixWorld.add(mesh.matrixWorld.elements, '2').min(-10).max(10).step(0.2);
-            matrixWorld.add(mesh.matrixWorld.elements, '3').min(-10).max(10).step(0.2);
-            matrixWorld.add(mesh.matrixWorld.elements, '4').min(-10).max(10).step(0.2);
-            matrixWorld.add(mesh.matrixWorld.elements, '5').min(-10).max(10).step(0.2);
-            matrixWorld.add(mesh.matrixWorld.elements, '6').min(-10).max(10).step(0.2);
-            matrixWorld.add(mesh.matrixWorld.elements, '7').min(-10).max(10).step(0.2);
-            matrixWorld.add(mesh.matrixWorld.elements, '8').min(-10).max(10).step(0.2);
-            matrixWorld.add(mesh.matrixWorld.elements, '9').min(-10).max(10).step(0.2);
-            matrixWorld.add(mesh.matrixWorld.elements, '10').min(-10).max(10).step(0.2);
-            matrixWorld.add(mesh.matrixWorld.elements, '11').min(-10).max(10).step(0.2);
-            matrixWorld.add(mesh.matrixWorld.elements, '12').min(-10).max(10).step(0.2);
-            matrixWorld.add(mesh.matrixWorld.elements, '13').min(-10).max(10).step(0.2);
-            matrixWorld.add(mesh.matrixWorld.elements, '14').min(-10).max(10).step(0.2);
-            matrixWorld.add(mesh.matrixWorld.elements, '15').min(-10).max(10).step(0.2);
-            parameters.add(mesh.geometry.parameters, 'heightSegments').min(-50).max(50).step(1);
-            parameters.add(mesh.geometry.parameters, 'radius').min(-50).max(50).step(1);
-            parameters.add(mesh.geometry.parameters, 'widthSegments').min(-50).max(50).step(1);
-        }
+        let mesh = new THREE.Mesh(geometry, material);
+        this.scene.add(mesh);*/
 
-		//this.scene.add(mesh);
+
+
+
+		this.scene.add(meshCircle)
+
+
+
+    /*    function CircleGeometry( mesh ) {
+            var data = {
+                radius: 2,
+                segments: 64,
+                thetaStart: 1,
+                thetaLength: Math.PI * 2
+            };
+            function generateGeometry() {
+                updateGroupGeometry( mesh,
+                    new THREE.CircleGeometry(
+                        data.radius, data.segments, data.thetaStart, data.thetaLength
+                    )
+                );
+            }
+            var folder = gui.addFolder( 'THREE.CircleGeometry' );
+            folder.add( data, 'radius', 1, 100 ).onChange( generateGeometry );
+            folder.add( data, 'segments', -10, 100 ).onChange( generateGeometry );
+            folder.add( data, 'thetaStart', -10, 100 ).onChange( generateGeometry );
+            folder.add( data, 'thetaLength', 0, Math.PI * 2 ).onChange( generateGeometry );
+            generateGeometry();
+        }
+        function circle(mesh) {
+            let data = {
+                radius: 5,
+                segments: 64,
+                thetaStart: 1,
+                thetaLength: Math.PI * 2
+            }
+            function generateGeometry() {
+                var circleGeometry = new THREE.CircleGeometry(data.radius, data.segments, data.thetaStart, data.thetaLength);
+                var geometry = new THREE.Geometry();
+                for(let i = 1; i <= data.segments; i++){
+                    geometry.vertices.push( circleGeometry.vertices[i] );
+                }
+                geometry.vertices.push( geometry.vertices[0] );
+                updateGroupGeometry( mesh, geometry );
+            }
+            var folder = gui.addFolder( 'THREE.CircleGeometry' );
+            folder.add( data, 'radius', 0, Math.PI * 2 ).onChange( generateGeometry );
+            folder.add( data, 'segments', -10, 100 ).onChange( generateGeometry );
+            folder.add( data, 'thetaStart', -10, 100 ).onChange( generateGeometry );
+            folder.add( data, 'thetaLength', 0, Math.PI * 2 ).onChange( generateGeometry );
+            generateGeometry();
+        }
+        function RingGeometry( mesh ) {
+            var data = {
+                innerRadius: 5,
+                outerRadius: 10,
+                thetaSegments: 8,
+                phiSegments: 8,
+                thetaStart: 0,
+                thetaLength: Math.PI * 2
+            };
+            function generateGeometry() {
+                updateGroupGeometry( mesh,
+                    new THREE.RingGeometry(
+                        data.innerRadius, data.outerRadius, data.thetaSegments, data.phiSegments, data.thetaStart, data.thetaLength
+                    )
+                );
+            }
+            var folder = gui.addFolder( 'THREE.RingGeometry' );
+            folder.add( data, 'innerRadius', 1, 100 ).onChange( generateGeometry );
+            folder.add( data, 'outerRadius', 1, 100 ).onChange( generateGeometry );
+            folder.add( data, 'thetaSegments', 1, 100 ).step( 1 ).onChange( generateGeometry );
+            folder.add( data, 'phiSegments', 1, 100 ).step( 1 ).onChange( generateGeometry );
+            folder.add( data, 'thetaStart', 0, Math.PI * 2 ).onChange( generateGeometry );
+            folder.add( data, 'thetaLength', 0, Math.PI * 2 ).onChange( generateGeometry );
+            generateGeometry();
+        }
+        function TorusBufferGeometry( mesh ) {
+            var data = {
+                radius: 2,
+                tube: 0.05,
+                radialSegments: 16,
+                tubularSegments: 195,
+                arc: Math.PI * 2
+            };
+            function generateGeometry() {
+                updateGroupGeometry( mesh,
+                    new THREE.TorusBufferGeometry(
+                        data.radius, data.tube, data.radialSegments, data.tubularSegments, data.arc,
+                    )
+                );
+            }
+            var folder = gui.addFolder( 'THREE.TorusBufferGeometry' );
+            folder.add( data, 'radius', 1, 100 ).onChange( generateGeometry );
+            folder.add( data, 'tube', -10, 100 ).onChange( generateGeometry );
+            folder.add( data, 'arc', 0, Math.PI * 2 ).onChange( generateGeometry );
+            generateGeometry();
+        }
+        function EllipseCurve( mesh ) {
+            var data = {
+                ax: 0, aY: 0,
+                xRadius: 1, yRadius: 1,
+                aStartAngle: 0, aEndAngle: 2 * Math.PI,
+                aClockwise: false,
+                aRotation: 0,
+            };
+            function generateGeometry() {
+                var curve = new THREE.EllipseCurve(
+                    data.ax, data.aY, data.xRadius, data.yRadius, data.aStartAngle,
+                    data.aEndAngle, data.aClockwise, data.aRotation
+                );
+                var points = curve.getPoints( 50 );
+                var geometry = new THREE.BufferGeometry(16).setFromPoints( points );
+                updateGroupGeometry( mesh, geometry );
+            }
+            var folder = gui.addFolder( 'THREE.EllipseCurve' );
+            folder.add( data, 'xRadius', 1, 100 ).onChange( generateGeometry );
+            folder.add( data, 'yRadius', 1, 100 ).onChange( generateGeometry );
+            folder.add( data, 'aStartAngle', 0, Math.PI * 2 ).onChange( generateGeometry );
+            folder.add( data, 'aEndAngle', 0, Math.PI * 2 ).onChange( generateGeometry );
+            generateGeometry();
+        }*/
+    /*    function bendTheCone(r1, r2, rMain, theta, segments){
+            var geom = new THREE.CylinderGeometry(r1, r2, theta, 3, segments);
+            geom.translate(rMain, theta / 2 ,0);
+
+            geom.vertices.forEach(function(vertex){
+                var localTheta = vertex.y;
+                var localRadius = vertex.x;
+                vertex.x = Math.cos(localTheta) * localRadius;
+                vertex.y = Math.sin(localTheta) * localRadius;
+            });
+            geom.computeFaceNormals();
+            geom.computeVertexNormals();
+            return geom;
+        }
+        var geometry = bendTheCone(0.5, 0.5, 10, THREE.Math.degToRad(360), 60);
+        var mesh = new THREE.Mesh(geometry, new THREE.LineBasicMaterial());
+        this.scene.add(mesh);*/
 	}
 
 	setupCamera() {
 		this.camera = new THREE.PerspectiveCamera(45, 0, 0.0001, 10000);
 		//this.camera = new THREE.PerspectiveCamera(45, width/height, 0.1, 5000);
-
 		this.cameraBaseX = this.isGrid ? -20 : 0;
 		this.cameraBaseY = this.isGrid ? 15 : 0;
 		this.cameraBaseZ = this.isGrid ? 20 : 30;
@@ -220,6 +287,69 @@ class Loader {
 			this.deltaTimeSeconds -= this.diffTime;
 			this.diffTime = 0;
 		}
+
+
+        function updateGroupGeometry( mesh, geometry ) {
+            mesh.children[ 0 ].geometry.dispose();
+            mesh.children[ 0 ].geometry = geometry;
+        }
+        if (counter <= 2.04){
+			counter = counter > 2 ? 2 : counter;
+            EllipseCurve(meshCircle);
+		}
+
+        function EllipseCurve( mesh ) {
+            y = counter
+            counter += increase
+            var data = {
+                ax: 0, aY: 0,
+                xRadius: 1, yRadius: 1,
+                aStartAngle: 0, aEndAngle: Math.PI * y,
+                aClockwise: false,
+                aRotation: 0,
+            };
+            console.log( 'test' )
+            function generateGeometry() {
+                var curve = new THREE.EllipseCurve(
+                    data.ax, data.aY, data.xRadius, data.yRadius, data.aStartAngle,
+                    data.aEndAngle, data.aClockwise, data.aRotation
+                );
+                var points = curve.getPoints( 50 );
+                var geometry = new THREE.BufferGeometry(16).setFromPoints( points );
+                updateGroupGeometry( mesh, geometry );
+            }
+
+            generateGeometry();
+        }
+
+        function shape( mesh ) {
+            y = counter
+            counter += increase
+            let data = {
+                ax: 0, aY: 0,
+                radius: 4,
+                aStartAngle: 0, aEndAngle: Math.PI * y,
+                aClockwise: false,
+            };
+            function generateGeometry() {
+                let shape = new THREE.Shape();
+                shape.absarc( data.ax, data.aY, data.radius, data.aStartAngle,
+                    data.aEndAngle, data.aClockwise
+                );
+                let spacedPoints = shape.createSpacedPointsGeometry(360);
+                let vertexColors = [];
+                spacedPoints.vertices.forEach( function( item, index ){
+                    vertexColors.push( new THREE.Color( 0xff0000 ) )
+                });
+                spacedPoints.colors = vertexColors;
+                updateGroupGeometry( mesh, spacedPoints );
+            }
+         /*   let folder = gui.addFolder( 'THREE.Shape' );
+            folder.add( data, 'aStartAngle', 0, Math.PI * 2 ).onChange( generateGeometry );
+            folder.add( data, 'aEndAngle', 0, Math.PI * 2 ).onChange( generateGeometry );*/
+            generateGeometry();
+        }
+
 		this.deltaTimeSeconds *= this.timescale;
 		this.deltaTimeMilliseconds = this.deltaTimeSeconds * 1000;
 		this.deltaTimeNormal = this.deltaTimeMilliseconds / (1000 / 60);
@@ -353,8 +483,9 @@ class Loader {
 	loop() {
 		this.update();
 		this.render();
-		this.raf = window.requestAnimationFrame(() => this.loop() );
+        this.raf = window.requestAnimationFrame(() => this.loop() );
 	}
+
 
 }
 

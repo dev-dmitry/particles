@@ -16,7 +16,7 @@ class SystemBase {
 
 		this.entering = true;
 		this.enterProgress = 0;
-		this.enterRate = 0.015;
+		this.enterRate = 0.1;
 
 		this.exiting = false;
 		this.exitProgress = 0;

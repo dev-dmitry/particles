@@ -342,6 +342,8 @@ function enterCanvas(quantity, radii, durations, charges) {
       sumCharges,
       stopRun,
       degree;
+  console.log(canvas);
+  console.log(ctx);
   var currentDegrees = [],
       finals = [],
       clockwise = [];
@@ -502,6 +504,7 @@ var Osc = __webpack_require__(28);
 
 var test = true;
 var flag = 0;
+var angle = 0;
 
 var Particle =
 /*#__PURE__*/
@@ -516,7 +519,8 @@ function (_ParticleBase) {
     _this = _possibleConstructorReturn(this, (Particle.__proto__ || Object.getPrototypeOf(Particle)).call(this, config, system, loader));
     _this.config = config;
     _this.radius = config.radius;
-    _this.order = config.order; //this.alternate = config.alternate;
+    _this.order = config.order;
+    _this.group = config.group; //this.alternate = config.alternate;
 
     _this.osc = new Osc(_this.order, 0.015, true, false);
 
@@ -536,32 +540,19 @@ function (_ParticleBase) {
     key: "update",
     value: function update() {
       if (test) {
-        //	console.log(this.config);
         flag++;
-        if (flag > 5) test = false;
+        if (flag > 2) test = false;
       } //this.osc.update(this.loader.timescale);
-
-      /*let angle = this.calc.map(this.order, 0, 1, -Math.cos(this.loader.elapsedMilliseconds * 0.0015) * (Math.PI * 1.5), Math.sin(this.loader.elapsedMilliseconds * 0.0015) * (Math.PI * 1.5));
-      angle += 0;*/
+      //let angle = this.calc.map(this.order, 0, 1, -Math.cos(this.loader.elapsedMilliseconds * 0.0015) * (Math.PI * 1.5), Math.sin(this.loader.elapsedMilliseconds * 0.0015) * (Math.PI * 1.5));
 
 
-      var angle = 0;
-      angle += 0.5;
-      var x = Math.cos(angle) * this.radius;
-      var y = Math.sin(angle) * this.radius;
-      /*let x = Math.cos(angle) * this.radius;
-      let y = this.calc.map(this.order, 0, 1, -this.system.height , this.system.height);*/
+      var x = 0.12 * Math.sin(angle);
+      var z = 0.3 * Math.sin(angle);
+      var y = 0.12 * Math.cos(angle); //this.mesh.position.x += x;
+      // this.mesh.position.z += z;
+      //this.mesh.position.y += y;
 
-      var z = (Math.sin(angle) + Math.cos(angle)) * this.radius;
-      this.mesh.position.x = x;
-      this.mesh.position.y = y;
-      /* this.mesh.position.z = z;*/
-      //	let scale = 0.1 + (this.osc.val(this.ease.inOutExpo)) * 0.2;
-
-      /*if(this.alternate) {
-      	scale = 0.1 + (1 - this.osc.val(this.ease.inOutExpo)) * 0.2;
-      }*/
-      //	this.mesh.scale.set(scale, scale, scale);
+      angle += Math.PI / 180 * 2; //this.mesh.rotation.set(scale, scale, scale);
     }
   }]);
 
@@ -611,7 +602,8 @@ function (_SystemBase) {
     _this.lines = [];
     _this.count = 1;
     _this.height = 10;
-    console.log(_this.particleGroup); //for(let i = 0; i <= this.count; i++) {
+    _this.particleGroup.position.y = 0.0;
+    _this.particleGroup.position.x = -3.4; //for(let i = 0; i <= 4; i++) {
 
     _this.particles.push(new Particle({
       group: _this.particleGroup,
@@ -620,20 +612,11 @@ function (_SystemBase) {
       color: 0xffffff,
       opacity: 1,
       size: 0.1,
-      //TODO не влияет на размер
       radius: 4
-    }, _this, _this.loader));
-    /*this.particles.push(new Particle({
-    	group: this.particleGroup,
-    	order: i / (this.count - 1),
-    	alternate: true,
-    	color: 0xffffff,
-    	opacity: 1,
-    	size: 0.1,
-    	radius: 4,
-    }, this, this.loader));*/
-    //}
+    }, _this, _this.loader)); //}
 
+
+    console.log(_this.particles); //???
 
     var lineMaterial = new THREE.LineBasicMaterial({
       color: 0xffffff,
@@ -676,9 +659,7 @@ function (_SystemBase) {
         line.geometry.vertices[1].y = p2.mesh.position.y;
         line.geometry.vertices[1].z = p2.mesh.position.z;
         line.geometry.verticesNeedUpdate = true;
-      } //TODO Движение частицы когда x или y отличны от нуля
-      //this.particleGroup.rotation.z = Math.sin(this.loader.elapsedMilliseconds * 0.0015) * Math.PI * 0.25;
-
+      }
 
       if (this.exiting && !this.loader.isOrbit && !this.loader.isGrid) {
         this.loader.camera.position.z = this.loader.cameraBaseZ - this.ease.inExpo(this.exitProgress, 0, 1, 1) * this.loader.cameraBaseZ;
@@ -707,18 +688,14 @@ var Ease = __webpack_require__(27);
 
 var AxisHelper = __webpack_require__(25);
 
-var flag = 0;
 var gui = new dat.GUI();
-var position = gui.addFolder('position');
-var scale = gui.addFolder('scale');
-var rotation = gui.addFolder('rotation');
-var renderOrder = gui.addFolder('renderOrder');
-var quaternion = gui.addFolder('quaternion');
-var up = gui.addFolder('up');
-var matrix = gui.addFolder('matrix');
-var matrixWorld = gui.addFolder('matrixWorld');
-var boundingSphere = gui.addFolder('boundingSphere');
-var parameters = gui.addFolder('parameters');
+var increase = 0.05;
+var counter = 0;
+var y;
+var meshCircle = new THREE.Object3D();
+meshCircle.add(new THREE.Line(new THREE.Geometry(), new THREE.LineBasicMaterial({
+  color: 0xffffff
+})));
 
 var Loader =
 /*#__PURE__*/
@@ -761,16 +738,9 @@ function () {
       this.isDebug = location.hash.indexOf('debug') > 0;
       this.isGrid = location.hash.indexOf('grid') > 0;
       this.isOrbit = location.hash.indexOf('orbit') > 0;
-      this.debugHash = ''; //if(this.isDebug) {
-
+      this.debugHash = '';
       this.isGrid = true;
-      this.isOrbit = true; //	this.debugHash += 'debug';
-      //this.dom.html.classList.add('is-debug');
-
-      /*} else {
-      	this.debugHash += this.isGrid ? 'grid' : '';
-      	this.debugHash += this.isOrbit ? 'orbit' : '';
-      }*/
+      this.isOrbit = true;
 
       if (this.debugHash) {
         [].slice.call(document.querySelectorAll('.demo')).forEach(function (elem, i, arr) {
@@ -792,70 +762,143 @@ function () {
     key: "setupScene",
     value: function setupScene() {
       this.scene = new THREE.Scene();
-      var light = new THREE.AmbientLight(0xffffff);
-      this.scene.add(light);
-      var geometry = new THREE.SphereGeometry(1, 100, 100);
-      var material = new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-        wireframe: true
-      });
-      var mesh = new THREE.Mesh(geometry, material);
+      /*		let geometry = new THREE.SphereGeometry(5, 30, 30);
+      		let material = new THREE.MeshBasicMaterial({color: 0xffffff, wireframe: true});
+              let mesh = new THREE.Mesh(geometry, material);
+              this.scene.add(mesh);*/
 
-      if (true) {
-        position.add(mesh.position, 'x').min(-10).max(10).step(0.2);
-        position.add(mesh.position, 'y').min(-10).max(10).step(0.2);
-        position.add(mesh.position, 'z').min(-10).max(10).step(0.2);
-        scale.add(mesh.scale, 'x').min(-10).max(10).step(0.2);
-        scale.add(mesh.scale, 'y').min(-10).max(10).step(0.2);
-        scale.add(mesh.scale, 'z').min(-10).max(10).step(0.2);
-        up.add(mesh.up, 'x').min(-10).max(10).step(0.2);
-        up.add(mesh.up, 'y').min(-10).max(10).step(0.2);
-        up.add(mesh.up, 'z').min(-10).max(10).step(0.2);
-        rotation.add(mesh.rotation, '_x').min(-10).max(10).step(0.2);
-        rotation.add(mesh.rotation, '_y').min(-10).max(10).step(0.2);
-        rotation.add(mesh.rotation, '_z').min(-10).max(10).step(0.2);
-        quaternion.add(mesh.quaternion, '_x').min(-10).max(10).step(0.2);
-        quaternion.add(mesh.quaternion, '_y').min(-10).max(10).step(0.2);
-        quaternion.add(mesh.quaternion, '_z').min(-10).max(10).step(0.2);
-        quaternion.add(mesh.quaternion, '_w').min(-10).max(10).step(0.2);
-        renderOrder.add(mesh, 'renderOrder').min(-10).max(10).step(0.2);
-        matrix.add(mesh.matrix.elements, '0').min(-10).max(10).step(0.2);
-        matrix.add(mesh.matrix.elements, '1').min(-10).max(10).step(0.2);
-        matrix.add(mesh.matrix.elements, '2').min(-10).max(10).step(0.2);
-        matrix.add(mesh.matrix.elements, '3').min(-10).max(10).step(0.2);
-        matrix.add(mesh.matrix.elements, '4').min(-10).max(10).step(0.2);
-        matrix.add(mesh.matrix.elements, '5').min(-10).max(10).step(0.2);
-        matrix.add(mesh.matrix.elements, '6').min(-10).max(10).step(0.2);
-        matrix.add(mesh.matrix.elements, '7').min(-10).max(10).step(0.2);
-        matrix.add(mesh.matrix.elements, '8').min(-10).max(10).step(0.2);
-        matrix.add(mesh.matrix.elements, '9').min(-10).max(10).step(0.2);
-        matrix.add(mesh.matrix.elements, '10').min(-10).max(10).step(0.2);
-        matrix.add(mesh.matrix.elements, '11').min(-10).max(10).step(0.2);
-        matrix.add(mesh.matrix.elements, '12').min(-10).max(10).step(0.2);
-        matrix.add(mesh.matrix.elements, '13').min(-10).max(10).step(0.2);
-        matrix.add(mesh.matrix.elements, '14').min(-10).max(10).step(0.2);
-        matrix.add(mesh.matrix.elements, '15').min(-10).max(10).step(0.2);
-        matrixWorld.add(mesh.matrixWorld.elements, '0').min(-10).max(10).step(0.2);
-        matrixWorld.add(mesh.matrixWorld.elements, '1').min(-10).max(10).step(0.2);
-        matrixWorld.add(mesh.matrixWorld.elements, '2').min(-10).max(10).step(0.2);
-        matrixWorld.add(mesh.matrixWorld.elements, '3').min(-10).max(10).step(0.2);
-        matrixWorld.add(mesh.matrixWorld.elements, '4').min(-10).max(10).step(0.2);
-        matrixWorld.add(mesh.matrixWorld.elements, '5').min(-10).max(10).step(0.2);
-        matrixWorld.add(mesh.matrixWorld.elements, '6').min(-10).max(10).step(0.2);
-        matrixWorld.add(mesh.matrixWorld.elements, '7').min(-10).max(10).step(0.2);
-        matrixWorld.add(mesh.matrixWorld.elements, '8').min(-10).max(10).step(0.2);
-        matrixWorld.add(mesh.matrixWorld.elements, '9').min(-10).max(10).step(0.2);
-        matrixWorld.add(mesh.matrixWorld.elements, '10').min(-10).max(10).step(0.2);
-        matrixWorld.add(mesh.matrixWorld.elements, '11').min(-10).max(10).step(0.2);
-        matrixWorld.add(mesh.matrixWorld.elements, '12').min(-10).max(10).step(0.2);
-        matrixWorld.add(mesh.matrixWorld.elements, '13').min(-10).max(10).step(0.2);
-        matrixWorld.add(mesh.matrixWorld.elements, '14').min(-10).max(10).step(0.2);
-        matrixWorld.add(mesh.matrixWorld.elements, '15').min(-10).max(10).step(0.2);
-        parameters.add(mesh.geometry.parameters, 'heightSegments').min(-50).max(50).step(1);
-        parameters.add(mesh.geometry.parameters, 'radius').min(-50).max(50).step(1);
-        parameters.add(mesh.geometry.parameters, 'widthSegments').min(-50).max(50).step(1);
-      } //this.scene.add(mesh);
+      this.scene.add(meshCircle);
+      /*    function CircleGeometry( mesh ) {
+              var data = {
+                  radius: 2,
+                  segments: 64,
+                  thetaStart: 1,
+                  thetaLength: Math.PI * 2
+              };
+              function generateGeometry() {
+                  updateGroupGeometry( mesh,
+                      new THREE.CircleGeometry(
+                          data.radius, data.segments, data.thetaStart, data.thetaLength
+                      )
+                  );
+              }
+              var folder = gui.addFolder( 'THREE.CircleGeometry' );
+              folder.add( data, 'radius', 1, 100 ).onChange( generateGeometry );
+              folder.add( data, 'segments', -10, 100 ).onChange( generateGeometry );
+              folder.add( data, 'thetaStart', -10, 100 ).onChange( generateGeometry );
+              folder.add( data, 'thetaLength', 0, Math.PI * 2 ).onChange( generateGeometry );
+              generateGeometry();
+          }
+          function circle(mesh) {
+              let data = {
+                  radius: 5,
+                  segments: 64,
+                  thetaStart: 1,
+                  thetaLength: Math.PI * 2
+              }
+              function generateGeometry() {
+                  var circleGeometry = new THREE.CircleGeometry(data.radius, data.segments, data.thetaStart, data.thetaLength);
+                  var geometry = new THREE.Geometry();
+                  for(let i = 1; i <= data.segments; i++){
+                      geometry.vertices.push( circleGeometry.vertices[i] );
+                  }
+                  geometry.vertices.push( geometry.vertices[0] );
+                  updateGroupGeometry( mesh, geometry );
+              }
+              var folder = gui.addFolder( 'THREE.CircleGeometry' );
+              folder.add( data, 'radius', 0, Math.PI * 2 ).onChange( generateGeometry );
+              folder.add( data, 'segments', -10, 100 ).onChange( generateGeometry );
+              folder.add( data, 'thetaStart', -10, 100 ).onChange( generateGeometry );
+              folder.add( data, 'thetaLength', 0, Math.PI * 2 ).onChange( generateGeometry );
+              generateGeometry();
+          }
+          function RingGeometry( mesh ) {
+              var data = {
+                  innerRadius: 5,
+                  outerRadius: 10,
+                  thetaSegments: 8,
+                  phiSegments: 8,
+                  thetaStart: 0,
+                  thetaLength: Math.PI * 2
+              };
+              function generateGeometry() {
+                  updateGroupGeometry( mesh,
+                      new THREE.RingGeometry(
+                          data.innerRadius, data.outerRadius, data.thetaSegments, data.phiSegments, data.thetaStart, data.thetaLength
+                      )
+                  );
+              }
+              var folder = gui.addFolder( 'THREE.RingGeometry' );
+              folder.add( data, 'innerRadius', 1, 100 ).onChange( generateGeometry );
+              folder.add( data, 'outerRadius', 1, 100 ).onChange( generateGeometry );
+              folder.add( data, 'thetaSegments', 1, 100 ).step( 1 ).onChange( generateGeometry );
+              folder.add( data, 'phiSegments', 1, 100 ).step( 1 ).onChange( generateGeometry );
+              folder.add( data, 'thetaStart', 0, Math.PI * 2 ).onChange( generateGeometry );
+              folder.add( data, 'thetaLength', 0, Math.PI * 2 ).onChange( generateGeometry );
+              generateGeometry();
+          }
+          function TorusBufferGeometry( mesh ) {
+              var data = {
+                  radius: 2,
+                  tube: 0.05,
+                  radialSegments: 16,
+                  tubularSegments: 195,
+                  arc: Math.PI * 2
+              };
+              function generateGeometry() {
+                  updateGroupGeometry( mesh,
+                      new THREE.TorusBufferGeometry(
+                          data.radius, data.tube, data.radialSegments, data.tubularSegments, data.arc,
+                      )
+                  );
+              }
+              var folder = gui.addFolder( 'THREE.TorusBufferGeometry' );
+              folder.add( data, 'radius', 1, 100 ).onChange( generateGeometry );
+              folder.add( data, 'tube', -10, 100 ).onChange( generateGeometry );
+              folder.add( data, 'arc', 0, Math.PI * 2 ).onChange( generateGeometry );
+              generateGeometry();
+          }
+          function EllipseCurve( mesh ) {
+              var data = {
+                  ax: 0, aY: 0,
+                  xRadius: 1, yRadius: 1,
+                  aStartAngle: 0, aEndAngle: 2 * Math.PI,
+                  aClockwise: false,
+                  aRotation: 0,
+              };
+              function generateGeometry() {
+                  var curve = new THREE.EllipseCurve(
+                      data.ax, data.aY, data.xRadius, data.yRadius, data.aStartAngle,
+                      data.aEndAngle, data.aClockwise, data.aRotation
+                  );
+                  var points = curve.getPoints( 50 );
+                  var geometry = new THREE.BufferGeometry(16).setFromPoints( points );
+                  updateGroupGeometry( mesh, geometry );
+              }
+              var folder = gui.addFolder( 'THREE.EllipseCurve' );
+              folder.add( data, 'xRadius', 1, 100 ).onChange( generateGeometry );
+              folder.add( data, 'yRadius', 1, 100 ).onChange( generateGeometry );
+              folder.add( data, 'aStartAngle', 0, Math.PI * 2 ).onChange( generateGeometry );
+              folder.add( data, 'aEndAngle', 0, Math.PI * 2 ).onChange( generateGeometry );
+              generateGeometry();
+          }*/
 
+      /*    function bendTheCone(r1, r2, rMain, theta, segments){
+              var geom = new THREE.CylinderGeometry(r1, r2, theta, 3, segments);
+              geom.translate(rMain, theta / 2 ,0);
+               geom.vertices.forEach(function(vertex){
+                  var localTheta = vertex.y;
+                  var localRadius = vertex.x;
+                  vertex.x = Math.cos(localTheta) * localRadius;
+                  vertex.y = Math.sin(localTheta) * localRadius;
+              });
+              geom.computeFaceNormals();
+              geom.computeVertexNormals();
+              return geom;
+          }
+          var geometry = bendTheCone(0.5, 0.5, 10, THREE.Math.degToRad(360), 60);
+          var mesh = new THREE.Mesh(geometry, new THREE.LineBasicMaterial());
+          this.scene.add(mesh);*/
     }
   }, {
     key: "setupCamera",
@@ -928,6 +971,72 @@ function () {
       if (this.diffTime) {
         this.deltaTimeSeconds -= this.diffTime;
         this.diffTime = 0;
+      }
+
+      function updateGroupGeometry(mesh, geometry) {
+        mesh.children[0].geometry.dispose();
+        mesh.children[0].geometry = geometry;
+      }
+
+      if (counter <= 2.04) {
+        counter = counter > 2 ? 2 : counter;
+        EllipseCurve(meshCircle);
+      }
+
+      function EllipseCurve(mesh) {
+        y = counter;
+        counter += increase;
+        var data = {
+          ax: 0,
+          aY: 0,
+          xRadius: 1,
+          yRadius: 1,
+          aStartAngle: 0,
+          aEndAngle: Math.PI * y,
+          aClockwise: false,
+          aRotation: 0
+        };
+        console.log('test');
+
+        function generateGeometry() {
+          var curve = new THREE.EllipseCurve(data.ax, data.aY, data.xRadius, data.yRadius, data.aStartAngle, data.aEndAngle, data.aClockwise, data.aRotation);
+          var points = curve.getPoints(50);
+          var geometry = new THREE.BufferGeometry(16).setFromPoints(points);
+          updateGroupGeometry(mesh, geometry);
+        }
+
+        generateGeometry();
+      }
+
+      function shape(mesh) {
+        y = counter;
+        counter += increase;
+        var data = {
+          ax: 0,
+          aY: 0,
+          radius: 4,
+          aStartAngle: 0,
+          aEndAngle: Math.PI * y,
+          aClockwise: false
+        };
+
+        function generateGeometry() {
+          var shape = new THREE.Shape();
+          shape.absarc(data.ax, data.aY, data.radius, data.aStartAngle, data.aEndAngle, data.aClockwise);
+          var spacedPoints = shape.createSpacedPointsGeometry(360);
+          var vertexColors = [];
+          spacedPoints.vertices.forEach(function (item, index) {
+            vertexColors.push(new THREE.Color(0xff0000));
+          });
+          spacedPoints.colors = vertexColors;
+          updateGroupGeometry(mesh, spacedPoints);
+        }
+        /*   let folder = gui.addFolder( 'THREE.Shape' );
+           folder.add( data, 'aStartAngle', 0, Math.PI * 2 ).onChange( generateGeometry );
+           folder.add( data, 'aEndAngle', 0, Math.PI * 2 ).onChange( generateGeometry );*/
+
+
+        generateGeometry();
       }
 
       this.deltaTimeSeconds *= this.timescale;
@@ -1114,16 +1223,16 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 //TODO добавить в gui объект отвечающий за параметры движения частицы
 var gui = new dat.GUI();
-var position = gui.addFolder('position');
-var scale = gui.addFolder('scale');
-var rotation = gui.addFolder('rotation');
-var renderOrder = gui.addFolder('renderOrder');
-var quaternion = gui.addFolder('quaternion');
-var up = gui.addFolder('up');
-var matrix = gui.addFolder('matrix');
-var matrixWorld = gui.addFolder('matrixWorld');
-var boundingSphere = gui.addFolder('boundingSphere');
-var parameters = gui.addFolder('parameters');
+/*let position = gui.addFolder('position');
+let scale = gui.addFolder('scale');
+let rotation = gui.addFolder('rotation');
+let renderOrder = gui.addFolder('renderOrder');
+let quaternion = gui.addFolder('quaternion');
+let up = gui.addFolder('up');
+let matrix = gui.addFolder('matrix');
+let matrixWorld = gui.addFolder('matrixWorld');
+let boundingSphere = gui.addFolder('boundingSphere');
+let parameters = gui.addFolder('parameters');*/
 
 var ParticleBase =
 /*#__PURE__*/
@@ -1148,8 +1257,6 @@ function () {
   _createClass(ParticleBase, [{
     key: "createMesh",
     value: function createMesh() {
-      var _this = this;
-
       this.geometry = this.system.sphereGeometry;
       this.material = new THREE.MeshBasicMaterial({
         color: this.color,
@@ -1160,73 +1267,66 @@ function () {
 
       });
       this.mesh = new THREE.Mesh(this.geometry, this.material);
-      console.log(this.mesh);
       /*this.mesh.position.x = this.x;
       this.mesh.position.y = this.y;
       this.mesh.position.z = this.z;*/
+      //this.mesh.position.x = -0.9;
 
       this.mesh.scale.set(this.size, this.size, this.size);
-
-      if (true) {
-        position.add(this.mesh.position, 'x').min(-10).max(10).step(0.2);
-        position.add(this.mesh.position, 'y').min(-10).max(10).step(0.2);
-        position.add(this.mesh.position, 'z').min(-10).max(10).step(0.2);
-        scale.add(this.mesh.scale, 'x').min(-10).max(10).step(0.2);
-        scale.add(this.mesh.scale, 'y').min(-10).max(10).step(0.2);
-        scale.add(this.mesh.scale, 'z').min(-10).max(10).step(0.2);
-        up.add(this.mesh.up, 'x').min(-10).max(10).step(0.2);
-        up.add(this.mesh.up, 'y').min(-10).max(10).step(0.2);
-        up.add(this.mesh.up, 'z').min(-10).max(10).step(0.2);
-        rotation.add(this.mesh.rotation, '_x').min(-10).max(10).step(0.2);
-        rotation.add(this.mesh.rotation, '_y').min(-10).max(10).step(0.2);
-        rotation.add(this.mesh.rotation, '_z').min(-10).max(10).step(0.2);
-        quaternion.add(this.mesh.quaternion, '_x').min(-10).max(10).step(0.2);
-        quaternion.add(this.mesh.quaternion, '_y').min(-10).max(10).step(0.2);
-        quaternion.add(this.mesh.quaternion, '_z').min(-10).max(10).step(0.2);
-        quaternion.add(this.mesh.quaternion, '_w').min(-10).max(10).step(0.2);
-        renderOrder.add(this.mesh, 'renderOrder').min(-10).max(10).step(0.2);
-        matrix.add(this.mesh.matrix.elements, '0').min(-10).max(10).step(0.2);
-        matrix.add(this.mesh.matrix.elements, '1').min(-10).max(10).step(0.2);
-        matrix.add(this.mesh.matrix.elements, '2').min(-10).max(10).step(0.2);
-        matrix.add(this.mesh.matrix.elements, '3').min(-10).max(10).step(0.2);
-        matrix.add(this.mesh.matrix.elements, '4').min(-10).max(10).step(0.2);
-        matrix.add(this.mesh.matrix.elements, '5').min(-10).max(10).step(0.2);
-        matrix.add(this.mesh.matrix.elements, '6').min(-10).max(10).step(0.2);
-        matrix.add(this.mesh.matrix.elements, '7').min(-10).max(10).step(0.2);
-        matrix.add(this.mesh.matrix.elements, '8').min(-10).max(10).step(0.2);
-        matrix.add(this.mesh.matrix.elements, '9').min(-10).max(10).step(0.2);
-        matrix.add(this.mesh.matrix.elements, '10').min(-10).max(10).step(0.2);
-        matrix.add(this.mesh.matrix.elements, '11').min(-10).max(10).step(0.2);
-        matrix.add(this.mesh.matrix.elements, '12').min(-10).max(10).step(0.2);
-        matrix.add(this.mesh.matrix.elements, '13').min(-10).max(10).step(0.2);
-        matrix.add(this.mesh.matrix.elements, '14').min(-10).max(10).step(0.2);
-        matrix.add(this.mesh.matrix.elements, '15').min(-10).max(10).step(0.2);
-        matrixWorld.add(this.mesh.matrixWorld.elements, '0').min(-10).max(10).step(0.2);
-        matrixWorld.add(this.mesh.matrixWorld.elements, '1').min(-10).max(10).step(0.2);
-        matrixWorld.add(this.mesh.matrixWorld.elements, '2').min(-10).max(10).step(0.2);
-        matrixWorld.add(this.mesh.matrixWorld.elements, '3').min(-10).max(10).step(0.2);
-        matrixWorld.add(this.mesh.matrixWorld.elements, '4').min(-10).max(10).step(0.2);
-        matrixWorld.add(this.mesh.matrixWorld.elements, '5').min(-10).max(10).step(0.2);
-        matrixWorld.add(this.mesh.matrixWorld.elements, '6').min(-10).max(10).step(0.2);
-        matrixWorld.add(this.mesh.matrixWorld.elements, '7').min(-10).max(10).step(0.2);
-        matrixWorld.add(this.mesh.matrixWorld.elements, '8').min(-10).max(10).step(0.2);
-        matrixWorld.add(this.mesh.matrixWorld.elements, '9').min(-10).max(10).step(0.2);
-        matrixWorld.add(this.mesh.matrixWorld.elements, '10').min(-10).max(10).step(0.2);
-        matrixWorld.add(this.mesh.matrixWorld.elements, '11').min(-10).max(10).step(0.2);
-        matrixWorld.add(this.mesh.matrixWorld.elements, '12').min(-10).max(10).step(0.2);
-        matrixWorld.add(this.mesh.matrixWorld.elements, '13').min(-10).max(10).step(0.2);
-        matrixWorld.add(this.mesh.matrixWorld.elements, '14').min(-10).max(10).step(0.2);
-        matrixWorld.add(this.mesh.matrixWorld.elements, '15').min(-10).max(10).step(0.2);
-        parameters.add(this.mesh.geometry.parameters, 'heightSegments').min(-50).max(50).step(1);
-        parameters.add(this.mesh.geometry.parameters, 'radius').min(-50).max(50).step(1);
-        parameters.add(this.mesh.geometry.parameters, 'widthSegments').min(-50).max(50).step(1);
-        setTimeout(function () {
-          boundingSphere.add(_this.mesh.geometry.boundingSphere.center, 'x').min(-10).max(10).step(0.2);
-          boundingSphere.add(_this.mesh.geometry.boundingSphere.center, 'y').min(-10).max(10).step(0.2);
-          boundingSphere.add(_this.mesh.geometry.boundingSphere.center, 'z').min(-10).max(10).step(0.2);
-          boundingSphere.add(_this.mesh.geometry.boundingSphere, 'radius').min(-10).max(10).step(0.2);
-        }, 2000);
-      }
+      /*if(true){
+          position.add(this.mesh.position, 'x').min(-10).max(10).step(0.1);
+          position.add(this.mesh.position, 'y').min(-10).max(10).step(0.1);
+          position.add(this.mesh.position, 'z').min(-10).max(10).step(0.1);
+          scale.add(this.mesh.scale, 'x').min(-10).max(10).step(0.1);
+          scale.add(this.mesh.scale, 'y').min(-10).max(10).step(0.1);
+          scale.add(this.mesh.scale, 'z').min(-10).max(10).step(0.1);
+          up.add(this.mesh.up, 'x').min(-10).max(10).step(0.1);
+          up.add(this.mesh.up, 'y').min(-10).max(10).step(0.1);
+          up.add(this.mesh.up, 'z').min(-10).max(10).step(0.1);
+          rotation.add(this.mesh.rotation, '_x').min(-10).max(10).step(0.1);
+          rotation.add(this.mesh.rotation, '_y').min(-10).max(10).step(0.1);
+          rotation.add(this.mesh.rotation, '_z').min(-10).max(10).step(0.1);
+          quaternion.add(this.mesh.quaternion, '_x').min(-10).max(10).step(0.1);
+          quaternion.add(this.mesh.quaternion, '_y').min(-10).max(10).step(0.1);
+          quaternion.add(this.mesh.quaternion, '_z').min(-10).max(10).step(0.1);
+          quaternion.add(this.mesh.quaternion, '_w').min(-10).max(10).step(0.1);
+          renderOrder.add(this.mesh, 'renderOrder').min(-10).max(10).step(0.1);
+          matrix.add(this.mesh.matrix.elements, '0').min(-10).max(10).step(0.1);
+          matrix.add(this.mesh.matrix.elements, '1').min(-10).max(10).step(0.1);
+          matrix.add(this.mesh.matrix.elements, '2').min(-10).max(10).step(0.1);
+          matrix.add(this.mesh.matrix.elements, '3').min(-10).max(10).step(0.1);
+          matrix.add(this.mesh.matrix.elements, '4').min(-10).max(10).step(0.1);
+          matrix.add(this.mesh.matrix.elements, '5').min(-10).max(10).step(0.1);
+          matrix.add(this.mesh.matrix.elements, '6').min(-10).max(10).step(0.1);
+          matrix.add(this.mesh.matrix.elements, '7').min(-10).max(10).step(0.1);
+          matrix.add(this.mesh.matrix.elements, '8').min(-10).max(10).step(0.1);
+          matrix.add(this.mesh.matrix.elements, '9').min(-10).max(10).step(0.1);
+          matrix.add(this.mesh.matrix.elements, '10').min(-10).max(10).step(0.1);
+          matrix.add(this.mesh.matrix.elements, '11').min(-10).max(10).step(0.1);
+          matrix.add(this.mesh.matrix.elements, '12').min(-10).max(10).step(0.1);
+          matrix.add(this.mesh.matrix.elements, '13').min(-10).max(10).step(0.1);
+          matrix.add(this.mesh.matrix.elements, '14').min(-10).max(10).step(0.1);
+          matrix.add(this.mesh.matrix.elements, '15').min(-10).max(10).step(0.1);
+          matrixWorld.add(this.mesh.matrixWorld.elements, '0').min(-10).max(10).step(0.1);
+          matrixWorld.add(this.mesh.matrixWorld.elements, '1').min(-10).max(10).step(0.1);
+          matrixWorld.add(this.mesh.matrixWorld.elements, '2').min(-10).max(10).step(0.1);
+          matrixWorld.add(this.mesh.matrixWorld.elements, '3').min(-10).max(10).step(0.1);
+          matrixWorld.add(this.mesh.matrixWorld.elements, '4').min(-10).max(10).step(0.1);
+          matrixWorld.add(this.mesh.matrixWorld.elements, '5').min(-10).max(10).step(0.1);
+          matrixWorld.add(this.mesh.matrixWorld.elements, '6').min(-10).max(10).step(0.1);
+          matrixWorld.add(this.mesh.matrixWorld.elements, '7').min(-10).max(10).step(0.1);
+          matrixWorld.add(this.mesh.matrixWorld.elements, '8').min(-10).max(10).step(0.1);
+          matrixWorld.add(this.mesh.matrixWorld.elements, '9').min(-10).max(10).step(0.1);
+          matrixWorld.add(this.mesh.matrixWorld.elements, '10').min(-10).max(10).step(0.1);
+          matrixWorld.add(this.mesh.matrixWorld.elements, '11').min(-10).max(10).step(0.1);
+          matrixWorld.add(this.mesh.matrixWorld.elements, '12').min(-10).max(10).step(0.1);
+          matrixWorld.add(this.mesh.matrixWorld.elements, '13').min(-10).max(10).step(0.1);
+          matrixWorld.add(this.mesh.matrixWorld.elements, '14').min(-10).max(10).step(0.1);
+          matrixWorld.add(this.mesh.matrixWorld.elements, '15').min(-10).max(10).step(0.1);
+          parameters.add(this.mesh.geometry.parameters, 'heightSegments').min(-50).max(50).step(1);
+          parameters.add(this.mesh.geometry.parameters, 'radius').min(-50).max(50).step(1);
+          parameters.add(this.mesh.geometry.parameters, 'widthSegments').min(-50).max(50).step(1);
+      }*/
 
       this.group.add(this.mesh);
     }
@@ -1268,7 +1368,7 @@ function () {
     this.loader.scene.add(this.particleGroup);
     this.entering = true;
     this.enterProgress = 0;
-    this.enterRate = 0.015;
+    this.enterRate = 0.1;
     this.exiting = false;
     this.exitProgress = 0;
     this.exitRate = 0.01;

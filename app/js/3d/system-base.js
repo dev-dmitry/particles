@@ -12,9 +12,7 @@ class SystemBase {
 		this.particles = [];
 		this.particleGroup = new THREE.Object3D();
 		this.particleGroup.scale.set(0.0001, 0.0001, 0.0001);
-
 		this.loader.scene.add(this.particleGroup);
-
 		this.entering = true;
 		this.enterProgress = 0;
 		this.enterRate = 0.015;

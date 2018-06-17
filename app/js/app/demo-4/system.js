@@ -2,43 +2,34 @@ const SystemBase = require('../system-base');
 const Particle = require('./particle');
 
 class System extends SystemBase {
-
 	constructor(loader) {
 		super(loader);
-
 		this.duration = 5500;
 		this.lines = [];
 		this.count = 1;
 		this.height = 10;
-console.log( this.particleGroup )
-		//for(let i = 0; i <= this.count; i++) {
+        this.particleGroup.position.y = 0.0;
+        this.particleGroup.position.x = -3.4;
+		//for(let i = 0; i <= 4; i++) {
 			this.particles.push(new Particle({
 				group: this.particleGroup,
 				order: 1,
 				alternate: false,
 				color: 0xffffff,
 				opacity: 1,
-				size: 0.1, //TODO не влияет на размер
-				radius: 4,
-			}, this, this.loader));
-
-			/*this.particles.push(new Particle({
-				group: this.particleGroup,
-				order: i / (this.count - 1),
-				alternate: true,
-				color: 0xffffff,
-				opacity: 1,
 				size: 0.1,
 				radius: 4,
-			}, this, this.loader));*/
+			}, this, this.loader));
 		//}
+		console.log( this.particles )
 
+
+		//???
 		let lineMaterial = new THREE.LineBasicMaterial({
 			color: 0xffffff,
 			opacity: 0.5,
 			transparent: true
 		});
-
 		for(let i = 0; i < this.count; i++) {
 			let lineGeometry = new THREE.Geometry();
 			lineGeometry.vertices.push(
@@ -71,9 +62,6 @@ console.log( this.particleGroup )
 			line.geometry.vertices[1].z = p2.mesh.position.z;
 			line.geometry.verticesNeedUpdate = true;
 		}
-		//TODO Движение частицы когда x или y отличны от нуля
-		//this.particleGroup.rotation.z = Math.sin(this.loader.elapsedMilliseconds * 0.0015) * Math.PI * 0.25;
-
 		if(this.exiting && !this.loader.isOrbit && !this.loader.isGrid) {
 			this.loader.camera.position.z = this.loader.cameraBaseZ - this.ease.inExpo(this.exitProgress, 0, 1, 1) * this.loader.cameraBaseZ;
 		}
