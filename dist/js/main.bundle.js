@@ -503,6 +503,8 @@ var ParticleBase = __webpack_require__(23);
 var Osc = __webpack_require__(28);
 
 var angle = 0;
+var radius = 10 * 2;
+var halfPI = Math.PI / 180;
 
 var Particle =
 /*#__PURE__*/
@@ -518,9 +520,7 @@ function (_ParticleBase) {
     _this.config = config;
     _this.radius = config.radius;
     _this.order = config.order;
-    _this.group = config.group; //this.alternate = config.alternate;
-
-    _this.osc = new Osc(_this.order, 0.015, true, false);
+    _this.group = config.group;
 
     _this.reset();
 
@@ -531,21 +531,17 @@ function (_ParticleBase) {
     key: "reset",
     value: function reset() {
       _get(Particle.prototype.__proto__ || Object.getPrototypeOf(Particle.prototype), "reset", this).call(this);
-
-      this.osc.reset();
     }
   }, {
     key: "update",
     value: function update() {
-      //this.osc.update(this.loader.timescale);
-      //let angle = this.calc.map(this.order, 0, 1, -Math.cos(this.loader.elapsedMilliseconds * 0.0015) * (Math.PI * 1.5), Math.sin(this.loader.elapsedMilliseconds * 0.0015) * (Math.PI * 1.5));
-      var x = 0.12 * Math.sin(angle);
-      var z = 0.3 * Math.sin(angle);
-      var y = 0.12 * Math.cos(angle);
-      this.mesh.position.x += x; // this.mesh.position.z += z;
-
+      var x = halfPI * radius * Math.sin(angle);
+      var z = halfPI * 0 * Math.sin(angle);
+      var y = halfPI * radius * Math.cos(angle);
+      this.mesh.position.x += x;
+      this.mesh.position.z += z;
       this.mesh.position.y += y;
-      angle += Math.PI / 180 * 2; //this.mesh.rotation.set(scale, scale, scale);
+      angle -= halfPI * 2;
     }
   }]);
 
@@ -576,9 +572,10 @@ var SystemBase = __webpack_require__(24);
 
 var Particle = __webpack_require__(20);
 
-var increase = 0.05;
+var increase = Math.PI / 280;
 var counter = 0;
 var y;
+var radius = 10;
 
 var System =
 /*#__PURE__*/
@@ -595,8 +592,8 @@ function (_SystemBase) {
     _this.lines = [];
     _this.count = 1;
     _this.height = 10;
-    _this.particleGroup.position.y = 0.0;
-    _this.particleGroup.position.x = -3.4; //for(let i = 0; i <= 4; i++) {
+    _this.particleGroup.position.y = 0;
+    _this.particleGroup.position.x = radius; //for(let i = 0; i <= 4; i++) {
 
     _this.particles.push(new Particle({
       group: _this.particleGroup,
@@ -645,8 +642,8 @@ function (_SystemBase) {
         var data = {
           ax: 0,
           aY: 0,
-          xRadius: 1,
-          yRadius: 1,
+          xRadius: radius,
+          yRadius: radius,
           aStartAngle: 0,
           aEndAngle: Math.PI * y,
           aClockwise: false,
@@ -1194,6 +1191,7 @@ function () {
     this.loader = loader;
     this.calc = this.loader.calc;
     this.ease = this.loader.ease;
+    this.config = config;
     this.group = config.group;
     this.x = config.x;
     this.y = config.y;
@@ -1217,11 +1215,6 @@ function () {
 
       });
       this.mesh = new THREE.Mesh(this.geometry, this.material);
-      /*this.mesh.position.x = this.x;
-      this.mesh.position.y = this.y;
-      this.mesh.position.z = this.z;*/
-      //this.mesh.position.x = -0.9;
-
       this.mesh.scale.set(this.size, this.size, this.size);
       /*if(true){
           position.add(this.mesh.position, 'x').min(-10).max(10).step(0.1);

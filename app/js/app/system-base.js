@@ -14,6 +14,7 @@ class SystemBase {
 		this.particleGroup.scale.set(0.0001, 0.0001, 0.0001);
 		this.loader.scene.add(this.particleGroup);
 
+
 		this.meshCircle = new THREE.Object3D();
         this.meshCircle.add( new THREE.Line(
             new THREE.Geometry(),

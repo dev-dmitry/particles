@@ -15,6 +15,7 @@ class ParticleBase {
 		this.loader = loader;
 		this.calc = this.loader.calc;
 		this.ease = this.loader.ease;
+		this.config = config;
 		this.group = config.group;
 		this.x = config.x;
 		this.y = config.y;
@@ -37,10 +38,6 @@ class ParticleBase {
 		});
 		this.mesh = new THREE.Mesh(this.geometry, this.material);
 
-		/*this.mesh.position.x = this.x;
-		this.mesh.position.y = this.y;
-		this.mesh.position.z = this.z;*/
-        //this.mesh.position.x = -0.9;
 		this.mesh.scale.set(this.size, this.size, this.size);
         /*if(true){
             position.add(this.mesh.position, 'x').min(-10).max(10).step(0.1);
@@ -97,9 +94,6 @@ class ParticleBase {
             parameters.add(this.mesh.geometry.parameters, 'widthSegments').min(-50).max(50).step(1);
         }*/
 		this.group.add(this.mesh);
-
-
-
 	}
 	reset() {}
 }

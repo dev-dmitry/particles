@@ -1,10 +1,9 @@
 const SystemBase = require('../system-base');
 const Particle = require('./particle');
-
-let increase = 0.05;
+let increase =  Math.PI/280;
 let counter = 0;
 let y;
-
+let radius = 10;
 class System extends SystemBase {
 	constructor(loader) {
 		super(loader);
@@ -12,8 +11,8 @@ class System extends SystemBase {
 		this.lines = [];
 		this.count = 1;
 		this.height = 10;
-        this.particleGroup.position.y = 0.0;
-        this.particleGroup.position.x = -3.4;
+        this.particleGroup.position.y = 0;
+        this.particleGroup.position.x = radius;
 		//for(let i = 0; i <= 4; i++) {
 			this.particles.push(new Particle({
 				group: this.particleGroup,
@@ -58,7 +57,7 @@ class System extends SystemBase {
             counter += increase;
             var data = {
                 ax: 0, aY: 0,
-                xRadius: 1, yRadius: 1,
+                xRadius: radius, yRadius: radius,
                 aStartAngle: 0, aEndAngle: Math.PI * y,
                 aClockwise: false,
                 aRotation: 0,
