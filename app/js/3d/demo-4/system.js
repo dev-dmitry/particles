@@ -22,7 +22,7 @@ class System extends SystemBase {
 				radius: 4,
 			}, this, this.loader));
 
-			this.particles.push(new Particle({
+			/*this.particles.push(new Particle({
 				group: this.particleGroup,
 				order: i / (this.count - 1),
 				alternate: true,
@@ -30,7 +30,7 @@ class System extends SystemBase {
 				opacity: 1,
 				size: 0.1,
 				radius: 4,
-			}, this, this.loader));
+			}, this, this.loader));*/
 		}
 
 		let lineMaterial = new THREE.LineBasicMaterial({

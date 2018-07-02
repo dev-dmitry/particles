@@ -1,9 +1,6 @@
 const SystemBase = require('../system-base');
 const Particle = require('./particle');
-let increase =  Math.PI/280;
-let counter = 0;
-let y;
-let radius = 10;
+
 class System extends SystemBase {
 	constructor(loader) {
 		super(loader);
@@ -11,20 +8,22 @@ class System extends SystemBase {
 		this.lines = [];
 		this.count = 1;
 		this.height = 10;
-        this.particleGroup.position.y = 0;
-        this.particleGroup.position.x = radius;
+    /*    this.particleGroup.position.y = 0;
+        this.particleGroup.position.x = radius;*/
 		//for(let i = 0; i <= 4; i++) {
 			this.particles.push(new Particle({
 				group: this.particleGroup,
 				order: 1,
+                x: 5,
 				alternate: false,
 				color: 0xffffff,
 				opacity: 1,
-				size: 0.1,
+				size: 2,
 				radius: 4,
 			}, this, this.loader));
 		//}
 
+        this.addParticle()
 		//???
 		/*let lineMaterial = new THREE.LineBasicMaterial({
 			color: 0xffffff,
@@ -42,41 +41,30 @@ class System extends SystemBase {
 			this.lines.push(lineMesh);*!/
 		}*/
 	}
+    addParticle(){
+        let particle;
+        for(let i = 1; i <= 1; i++) {
+            particle = new newData(this.particleGroup);
+            //particle.group.position.x = radius * i;
+            this.particles.push(new Particle({
+                group: particle.group,
+                order: i / (10 - 1),
+                alternate: false,
+                color: 0xffffff,
+                opacity: 1,
+                size: 0.5,
+                radius: 4,
+            }, this, this.loader));
+        }
 
+
+        function newData(name) {
+            this.group = name;
+        }
+    }
 	update() {
 		super.update();
 
-
-
-        if (counter <= 2.04){
-            counter = counter > 2 ? 2 : counter;
-            EllipseCurve(this.meshCircle);
-        }
-        function EllipseCurve( mesh ) {
-            y = counter;
-            counter += increase;
-            var data = {
-                ax: 0, aY: 0,
-                xRadius: radius, yRadius: radius,
-                aStartAngle: 0, aEndAngle: Math.PI * y,
-                aClockwise: false,
-                aRotation: 0,
-            };
-            function generateGeometry() {
-                var curve = new THREE.EllipseCurve(
-                    data.ax, data.aY, data.xRadius, data.yRadius, data.aStartAngle,
-                    data.aEndAngle, data.aClockwise, data.aRotation
-                );
-                var points = curve.getPoints( 50 );
-                var geometry = new THREE.BufferGeometry(16).setFromPoints( points );
-                updateGroupGeometry( mesh, geometry );
-            }
-            generateGeometry();
-        }
-        function updateGroupGeometry( mesh, geometry ) {
-            mesh.children[ 0 ].geometry.dispose();
-            mesh.children[ 0 ].geometry = geometry;
-        }
 
 
 

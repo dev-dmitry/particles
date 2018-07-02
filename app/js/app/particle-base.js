@@ -37,7 +37,6 @@ class ParticleBase {
          //   wireframe: true
 		});
 		this.mesh = new THREE.Mesh(this.geometry, this.material);
-
 		this.mesh.scale.set(this.size, this.size, this.size);
         /*if(true){
             position.add(this.mesh.position, 'x').min(-10).max(10).step(0.1);
@@ -93,7 +92,7 @@ class ParticleBase {
             parameters.add(this.mesh.geometry.parameters, 'radius').min(-50).max(50).step(1);
             parameters.add(this.mesh.geometry.parameters, 'widthSegments').min(-50).max(50).step(1);
         }*/
-		this.group.add(this.mesh);
+		//this.group.add(this.mesh);
 	}
 	reset() {}
 }

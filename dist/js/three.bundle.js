@@ -614,16 +614,16 @@ function (_SystemBase) {
         size: 0.1,
         radius: 4
       }, _this, _this.loader));
+      /*this.particles.push(new Particle({
+      	group: this.particleGroup,
+      	order: i / (this.count - 1),
+      	alternate: true,
+      	color: 0xffffff,
+      	opacity: 1,
+      	size: 0.1,
+      	radius: 4,
+      }, this, this.loader));*/
 
-      _this.particles.push(new Particle({
-        group: _this.particleGroup,
-        order: i / (_this.count - 1),
-        alternate: true,
-        color: 0xffffff,
-        opacity: 1,
-        size: 0.1,
-        radius: 4
-      }, _this, _this.loader));
     }
 
     var lineMaterial = new THREE.LineBasicMaterial({

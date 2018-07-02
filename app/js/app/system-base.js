@@ -1,3 +1,4 @@
+let flag = true
 class SystemBase {
 	constructor(loader) {
 		this.loader = loader;
@@ -15,17 +16,6 @@ class SystemBase {
 		this.loader.scene.add(this.particleGroup);
 
 
-		this.meshCircle = new THREE.Object3D();
-        this.meshCircle.add( new THREE.Line(
-            new THREE.Geometry(),
-            new THREE.LineBasicMaterial( {
-                color: 0xffffff,
-            } )
-        ) );
-        this.loader.scene.add(this.meshCircle)
-
-
-
 
 		this.entering = true;
 		this.enterProgress = 0;
@@ -39,11 +29,15 @@ class SystemBase {
 
 	update() {
 		let i = this.particles.length;
-		while(i--) {
-			this.particles[i].update();
+		if(flag){
+            console.log( this.particles[0] )
+			console.log( this.particleGroup )
+			flag = false
 		}
 
-		if(this.entering && this.enterProgress < 1) {
+        this.particles[0].update()
+        this.particleGroup.scale.set(1, 1, 1);
+	/*	if(this.entering && this.enterProgress < 1) {
 			this.enterProgress += this.enterRate * this.loader.deltaTimeNormal;
 			if(this.enterProgress > 1) {
 				this.enterProgress = 1;
@@ -51,9 +45,9 @@ class SystemBase {
 			}
 			let scale = this.ease.inOutExpo(this.enterProgress, 0, 1, 1);
 			this.particleGroup.scale.set(scale, scale, scale);
-		}
+		}*/
 
-		if(!this.exiting && this.loader.elapsedMilliseconds > this.duration) {
+		/*if(!this.exiting && this.loader.elapsedMilliseconds > this.duration) {
 			this.exiting = true;
 		}
 
@@ -63,7 +57,7 @@ class SystemBase {
 				this.exitProgress = 1;
 				this.loader.complete();
 			}
-		}
+		}*/
 	}
 
 	replay() {
