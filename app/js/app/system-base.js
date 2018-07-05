@@ -30,8 +30,8 @@ class SystemBase {
 	update() {
 		let i = this.particles.length;
 		if(flag){
-            console.log( this.particles[0] )
-			console.log( this.particleGroup )
+           /* console.log( this.particles[0] )
+			console.log( this.particleGroup )*/
 			flag = false
 		}
 

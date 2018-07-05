@@ -3,7 +3,6 @@ const Ease = require('./utils/ease');
 const AxisHelper = require('./utils/axis');
 
 class Loader {
-
 	constructor(System) {
 		this.calc = new Calc();
 		this.ease = new Ease();
@@ -43,13 +42,20 @@ class Loader {
         this.y = 0;
         this.angle = 0;
         this.halfPI = Math.PI/180;
-        this.meshParticles = new THREE.MeshBasicMaterial()
-        this.createParticles();
+
+		//for(let i = 0; i < 3; i++){
+            let options = {
+                radius: 2,
+                particleSize: 0.1,
+                angle: 0
+            }
+            this.createParticles(options);
+		//}
+
         /*---*/
 		this.system = new System(this);
 		this.loop();
 	}
-
 	setupDebug() {
 		this.isDebug = location.hash.indexOf('debug') > 0;
 		this.isGrid = location.hash.indexOf('grid') > 0;
@@ -71,7 +77,6 @@ class Loader {
 		this.deltaTimeNormal = this.deltaTimeMilliseconds / (1000 / 60);
 		this.elapsedMilliseconds = 0;
 	}
-
 	setupScene() {
 		this.scene = new THREE.Scene();
 		/*		let geometry = new THREE.SphereGeometry(5, 30, 30);
@@ -79,7 +84,6 @@ class Loader {
         let mesh = new THREE.Mesh(geometry, material);
         this.scene.add(mesh);*/
 	}
-
 	setupCamera() {
 		this.camera = new THREE.PerspectiveCamera(45, 0, 0.0001, 10000);
 		//this.camera = new THREE.PerspectiveCamera(45, width/height, 0.1, 5000);
@@ -152,14 +156,12 @@ class Loader {
         this.deltaTimeMilliseconds = this.deltaTimeSeconds * 1000;
         this.deltaTimeNormal = this.deltaTimeMilliseconds / (1000 / 60);
         this.elapsedMilliseconds += this.deltaTimeMilliseconds;
-
         this.system.update();
-
-        this.motionParticle();
         if(this.isOrbit) {
             this.controls.update();
         }
 
+       //this.motionParticle();
         if ( this.counter <= 2.01 && this.counter >= -2.01 ){
             this.counter = this.counter > 2 ? 2 : this.counter;
             this.y += this.options.increase;
@@ -168,19 +170,30 @@ class Loader {
         }
 	}
 
-    createParticles(){
-        /*this.meshParticle =  new THREE.Object3D();
-         this.scene.add(this.meshParticle);
-        this.boxGeometry = new THREE.BoxBufferGeometry(1, 1, 1);
-        this.center = new THREE.Vector3();*/
+
+    createParticles( options ){
+        let geometry = new THREE.SphereBufferGeometry( options.particleSize, 16, 16);
+        let material = new THREE.MeshBasicMaterial();
+        let meshParticles = new THREE.Mesh( geometry, material );
+        meshParticles.position.x = this.options.radius;
+        this.scene.add(meshParticles);
+        this.motionParticle( meshParticles, options );
+    }
+    motionParticle( meshParticles, options ){
+        console.log( options )
+        let x = this.halfPI * 2 * options.radius * Math.sin( options.angle );
+        let z = this.halfPI * 0 * Math.sin( options.angle );
+        let y = this.halfPI * 2 * options.radius * Math.cos( options.angle );
+        meshParticles.position.x += x;
+        meshParticles.position.z += z;
+        meshParticles.position.y += y;
+        options.angle -= this.halfPI * 2
+		this.motionParticle( meshParticles, options )
+    }
+
+   /* createParticles(){
         this.geometry = new THREE.SphereBufferGeometry( this.options.particleSize, 16, 16);
-        this.material = new THREE.MeshBasicMaterial({
-            color: 0xffffff,
-            transparent: true,
-            opacity: 1,
-            depthTest: false,
-            precision: 'lowp',
-        });
+        this.material = new THREE.MeshBasicMaterial();
         this.meshParticles = new THREE.Mesh( this.geometry, this.material );
         this.meshParticles.position.x = this.options.radius;
         this.scene.add(this.meshParticles);
@@ -194,19 +207,24 @@ class Loader {
         this.meshParticles.position.z += z;
         this.meshParticles.position.y += y;
         this.angle -= this.halfPI * 2
-	}
-
+	}*/
 	createCircle(){
-        this.meshCircle = new THREE.Object3D();
-        this.meshCircle.add( new THREE.Line(
+        let meshCircle = new THREE.Object3D();
+        meshCircle.add( new THREE.Line(
             new THREE.Geometry(),
             new THREE.LineBasicMaterial( {
                 color: 0xffffff,
             } )
         ) );
-        this.scene.add(this.meshCircle);
+        this.scene.add(meshCircle);
+        //TODO наклоны
+        meshCircle.scale.set(1, 1, 20);
+        meshCircle.up.set(20, 20, 20);
+        meshCircle.quaternion._y = 1;
+        meshCircle.quaternion._z = 1;
+      //  meshCircle.rotation.set(1, 1, 20);
         this.generateGeometry(
-            this.meshCircle,
+            meshCircle,
             {
                 ax: 0, aY: 0,
                 xRadius: this.options.radius, yRadius: this.options.radius,

@@ -743,9 +743,15 @@ function () {
     this.counter = 0;
     this.y = 0;
     this.angle = 0;
-    this.halfPI = Math.PI / 180;
-    this.meshParticles = new THREE.MeshBasicMaterial();
-    this.createParticles();
+    this.halfPI = Math.PI / 180; //for(let i = 0; i < 3; i++){
+
+    var options = {
+      radius: 2,
+      particleSize: 0.1,
+      angle: 0
+    };
+    this.createParticles(options); //}
+
     /*---*/
 
     this.system = new System(this);
@@ -867,11 +873,11 @@ function () {
       this.deltaTimeNormal = this.deltaTimeMilliseconds / (1000 / 60);
       this.elapsedMilliseconds += this.deltaTimeMilliseconds;
       this.system.update();
-      this.motionParticle();
 
       if (this.isOrbit) {
         this.controls.update();
-      }
+      } //this.motionParticle();
+
 
       if (this.counter <= 2.01 && this.counter >= -2.01) {
         this.counter = this.counter > 2 ? 2 : this.counter;
@@ -882,44 +888,60 @@ function () {
     }
   }, {
     key: "createParticles",
-    value: function createParticles() {
-      /*this.meshParticle =  new THREE.Object3D();
-       this.scene.add(this.meshParticle);
-      this.boxGeometry = new THREE.BoxBufferGeometry(1, 1, 1);
-      this.center = new THREE.Vector3();*/
-      this.geometry = new THREE.SphereBufferGeometry(this.options.particleSize, 16, 16);
-      this.material = new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-        transparent: true,
-        opacity: 1,
-        depthTest: false,
-        precision: 'lowp'
-      });
-      this.meshParticles = new THREE.Mesh(this.geometry, this.material);
-      this.meshParticles.position.x = this.options.radius;
-      this.scene.add(this.meshParticles);
-      this.motionParticle(this.meshParticles);
+    value: function createParticles(options) {
+      var geometry = new THREE.SphereBufferGeometry(options.particleSize, 16, 16);
+      var material = new THREE.MeshBasicMaterial();
+      var meshParticles = new THREE.Mesh(geometry, material);
+      meshParticles.position.x = this.options.radius;
+      this.scene.add(meshParticles);
+      this.motionParticle(meshParticles, options);
     }
   }, {
     key: "motionParticle",
-    value: function motionParticle() {
-      var x = this.halfPI * 2 * this.options.radius * Math.sin(this.angle);
-      var z = this.halfPI * 0 * Math.sin(this.angle);
-      var y = this.halfPI * 2 * this.options.radius * Math.cos(this.angle);
-      this.meshParticles.position.x += x;
-      this.meshParticles.position.z += z;
-      this.meshParticles.position.y += y;
-      this.angle -= this.halfPI * 2;
+    value: function motionParticle(meshParticles, options) {
+      console.log(options);
+      var x = this.halfPI * 2 * options.radius * Math.sin(options.angle);
+      var z = this.halfPI * 0 * Math.sin(options.angle);
+      var y = this.halfPI * 2 * options.radius * Math.cos(options.angle);
+      meshParticles.position.x += x;
+      meshParticles.position.z += z;
+      meshParticles.position.y += y;
+      options.angle -= this.halfPI * 2;
+      this.motionParticle(meshParticles, options);
     }
+    /* createParticles(){
+         this.geometry = new THREE.SphereBufferGeometry( this.options.particleSize, 16, 16);
+         this.material = new THREE.MeshBasicMaterial();
+         this.meshParticles = new THREE.Mesh( this.geometry, this.material );
+         this.meshParticles.position.x = this.options.radius;
+         this.scene.add(this.meshParticles);
+         this.motionParticle(this.meshParticles);
+    }
+    motionParticle(){
+         let x = this.halfPI * 2 * this.options.radius * Math.sin( this.angle );
+         let z = this.halfPI * 0 * Math.sin( this.angle );
+         let y = this.halfPI * 2 * this.options.radius * Math.cos( this.angle );
+         this.meshParticles.position.x += x;
+         this.meshParticles.position.z += z;
+         this.meshParticles.position.y += y;
+         this.angle -= this.halfPI * 2
+    }*/
+
   }, {
     key: "createCircle",
     value: function createCircle() {
-      this.meshCircle = new THREE.Object3D();
-      this.meshCircle.add(new THREE.Line(new THREE.Geometry(), new THREE.LineBasicMaterial({
+      var meshCircle = new THREE.Object3D();
+      meshCircle.add(new THREE.Line(new THREE.Geometry(), new THREE.LineBasicMaterial({
         color: 0xffffff
       })));
-      this.scene.add(this.meshCircle);
-      this.generateGeometry(this.meshCircle, {
+      this.scene.add(meshCircle); //TODO наклоны
+
+      meshCircle.scale.set(1, 1, 20);
+      meshCircle.up.set(20, 20, 20);
+      meshCircle.quaternion._y = 1;
+      meshCircle.quaternion._z = 1; //  meshCircle.rotation.set(1, 1, 20);
+
+      this.generateGeometry(meshCircle, {
         ax: 0,
         aY: 0,
         xRadius: this.options.radius,
@@ -1404,8 +1426,8 @@ function () {
       var i = this.particles.length;
 
       if (flag) {
-        console.log(this.particles[0]);
-        console.log(this.particleGroup);
+        /* console.log( this.particles[0] )
+        console.log( this.particleGroup )*/
         flag = false;
       }
 
