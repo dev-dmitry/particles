@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 29);
+/******/ 	return __webpack_require__(__webpack_require__.s = 34);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -500,7 +500,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var ParticleBase = __webpack_require__(23);
 
-var Osc = __webpack_require__(28);
+var Osc = __webpack_require__(33);
 
 var angle = 0;
 var radius = 10 * 2;
@@ -573,7 +573,7 @@ function _get(object, property, receiver) { if (object === null) object = Functi
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var SystemBase = __webpack_require__(24);
+var SystemBase = __webpack_require__(29);
 
 var Particle = __webpack_require__(20);
 
@@ -697,11 +697,17 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var Calc = __webpack_require__(26);
+var Calc = __webpack_require__(31);
 
-var Ease = __webpack_require__(27);
+var Ease = __webpack_require__(32);
 
-var AxisHelper = __webpack_require__(25);
+var AxisHelper = __webpack_require__(30);
+
+var Particles = __webpack_require__(28);
+
+var stats = new Stats();
+stats.showPanel(0);
+document.body.appendChild(stats.dom);
 
 var Loader =
 /*#__PURE__*/
@@ -732,33 +738,34 @@ function () {
     this.setupHelpers();
     this.listen();
     this.onResize();
-    /*---*/
-
-    this.options = {
-      radius: 2,
-      particleSize: 0.1,
-      increase: Math.PI / 280,
-      aClockwise: false
-    };
-    this.counter = 0;
-    this.y = 0;
-    this.angle = 0;
-    this.halfPI = Math.PI / 180; //for(let i = 0; i < 3; i++){
-
-    var options = {
-      radius: 2,
-      particleSize: 0.1,
-      angle: 0
-    };
-    this.createParticles(options); //}
-
-    /*---*/
-
+    this.particles = new Particles(this.scene);
     this.system = new System(this);
     this.loop();
   }
 
   _createClass(Loader, [{
+    key: "update",
+    value: function update() {
+      this.deltaTimeSeconds = this.clock.getDelta();
+
+      if (this.diffTime) {
+        this.deltaTimeSeconds -= this.diffTime;
+        this.diffTime = 0;
+      }
+
+      this.deltaTimeSeconds *= this.timescale;
+      this.deltaTimeMilliseconds = this.deltaTimeSeconds * 1000;
+      this.deltaTimeNormal = this.deltaTimeMilliseconds / (1000 / 60);
+      this.elapsedMilliseconds += this.deltaTimeMilliseconds;
+      this.system.update();
+
+      if (this.isOrbit) {
+        this.controls.update();
+      }
+
+      this.particles.updateElements();
+    }
+  }, {
     key: "setupDebug",
     value: function setupDebug() {
       var _this = this;
@@ -791,9 +798,9 @@ function () {
     value: function setupScene() {
       this.scene = new THREE.Scene();
       /*		let geometry = new THREE.SphereGeometry(5, 30, 30);
-      let material = new THREE.MeshBasicMaterial({color: 0xffffff, wireframe: true});
-            let mesh = new THREE.Mesh(geometry, material);
-            this.scene.add(mesh);*/
+      let material = new THREE.Mesh>BasicMaterial({color: 0xffffff, wireframe: true});
+      let mesh = new THREE.Mesh(geometry, material);
+      this.scene.add(mesh);*/
     }
   }, {
     key: "setupCamera",
@@ -857,114 +864,6 @@ function () {
         this.scene.add(this.axisHelper);
         this.camera.lookAt(new THREE.Vector3());
       }
-    }
-  }, {
-    key: "update",
-    value: function update() {
-      this.deltaTimeSeconds = this.clock.getDelta();
-
-      if (this.diffTime) {
-        this.deltaTimeSeconds -= this.diffTime;
-        this.diffTime = 0;
-      }
-
-      this.deltaTimeSeconds *= this.timescale;
-      this.deltaTimeMilliseconds = this.deltaTimeSeconds * 1000;
-      this.deltaTimeNormal = this.deltaTimeMilliseconds / (1000 / 60);
-      this.elapsedMilliseconds += this.deltaTimeMilliseconds;
-      this.system.update();
-
-      if (this.isOrbit) {
-        this.controls.update();
-      } //this.motionParticle();
-
-
-      if (this.counter <= 2.01 && this.counter >= -2.01) {
-        this.counter = this.counter > 2 ? 2 : this.counter;
-        this.y += this.options.increase;
-        this.counter += this.options.increase;
-        this.createCircle();
-      }
-    }
-  }, {
-    key: "createParticles",
-    value: function createParticles(options) {
-      var geometry = new THREE.SphereBufferGeometry(options.particleSize, 16, 16);
-      var material = new THREE.MeshBasicMaterial();
-      var meshParticles = new THREE.Mesh(geometry, material);
-      meshParticles.position.x = this.options.radius;
-      this.scene.add(meshParticles);
-      this.motionParticle(meshParticles, options);
-    }
-  }, {
-    key: "motionParticle",
-    value: function motionParticle(meshParticles, options) {
-      console.log(options);
-      var x = this.halfPI * 2 * options.radius * Math.sin(options.angle);
-      var z = this.halfPI * 0 * Math.sin(options.angle);
-      var y = this.halfPI * 2 * options.radius * Math.cos(options.angle);
-      meshParticles.position.x += x;
-      meshParticles.position.z += z;
-      meshParticles.position.y += y;
-      options.angle -= this.halfPI * 2;
-      this.motionParticle(meshParticles, options);
-    }
-    /* createParticles(){
-         this.geometry = new THREE.SphereBufferGeometry( this.options.particleSize, 16, 16);
-         this.material = new THREE.MeshBasicMaterial();
-         this.meshParticles = new THREE.Mesh( this.geometry, this.material );
-         this.meshParticles.position.x = this.options.radius;
-         this.scene.add(this.meshParticles);
-         this.motionParticle(this.meshParticles);
-    }
-    motionParticle(){
-         let x = this.halfPI * 2 * this.options.radius * Math.sin( this.angle );
-         let z = this.halfPI * 0 * Math.sin( this.angle );
-         let y = this.halfPI * 2 * this.options.radius * Math.cos( this.angle );
-         this.meshParticles.position.x += x;
-         this.meshParticles.position.z += z;
-         this.meshParticles.position.y += y;
-         this.angle -= this.halfPI * 2
-    }*/
-
-  }, {
-    key: "createCircle",
-    value: function createCircle() {
-      var meshCircle = new THREE.Object3D();
-      meshCircle.add(new THREE.Line(new THREE.Geometry(), new THREE.LineBasicMaterial({
-        color: 0xffffff
-      })));
-      this.scene.add(meshCircle); //TODO наклоны
-
-      meshCircle.scale.set(1, 1, 20);
-      meshCircle.up.set(20, 20, 20);
-      meshCircle.quaternion._y = 1;
-      meshCircle.quaternion._z = 1; //  meshCircle.rotation.set(1, 1, 20);
-
-      this.generateGeometry(meshCircle, {
-        ax: 0,
-        aY: 0,
-        xRadius: this.options.radius,
-        yRadius: this.options.radius,
-        aStartAngle: 0,
-        aEndAngle: Math.PI * this.y,
-        aClockwise: this.options.aClockwise,
-        aRotation: 0
-      });
-    }
-  }, {
-    key: "generateGeometry",
-    value: function generateGeometry(mesh, data) {
-      var curve = new THREE.EllipseCurve(data.ax, data.aY, data.xRadius, data.yRadius, data.aStartAngle, data.aEndAngle, data.aClockwise, data.aRotation);
-      var points = curve.getPoints(50);
-      var geometry = new THREE.BufferGeometry(16).setFromPoints(points);
-      this.updateGroupGeometry(mesh, geometry);
-    }
-  }, {
-    key: "updateGroupGeometry",
-    value: function updateGroupGeometry(mesh, geometry) {
-      mesh.children[0].geometry.dispose();
-      mesh.children[0].geometry = geometry;
     }
   }, {
     key: "render",
@@ -1115,8 +1014,10 @@ function () {
     value: function loop() {
       var _this4 = this;
 
+      stats.begin();
       this.update();
       this.render();
+      stats.end();
       this.raf = window.requestAnimationFrame(function () {
         return _this4.loop();
       });
@@ -1393,6 +1294,431 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+var Circle =
+/*#__PURE__*/
+function () {
+  function Circle(data, scene) {
+    _classCallCheck(this, Circle);
+
+    this.scene = scene;
+    this.data = data;
+  }
+
+  _createClass(Circle, [{
+    key: "createCircle",
+    value: function createCircle(i) {
+      this.data.meshCircle[i] = new THREE.Object3D();
+      this.data.meshCircle[i].add(new THREE.Line(new THREE.Geometry(), new THREE.LineBasicMaterial({
+        color: 0xffffff
+      })));
+      Object.assign(this.data.meshCircle[i].position, this.data.props[i].position);
+      this.scene.add(this.data.meshCircle[i]);
+      this.motionCircle(i);
+    }
+  }, {
+    key: "motionCircle",
+    value: function motionCircle(i) {
+      //TODO наклоны
+
+      /*this.data.meshCircle[i].quaternion._x = this.data.props[i].rotate.x;
+      this.data.meshCircle[i].quaternion._y = this.data.props[i].rotate.y;
+      this.data.meshCircle[i].quaternion._z = this.data.props[i].rotate.z;*/
+      this.data.meshCircle[i].rotation.set(this.data.props[i].rotate.x, this.data.props[i].rotate.y, this.data.props[i].rotate.z);
+      this.generateGeometry(this.data.meshCircle[i], {
+        ax: 0,
+        aY: 0,
+        xRadius: this.data.props[i].radius,
+        yRadius: this.data.props[i].radius,
+        aStartAngle: 0,
+        aEndAngle: Math.PI * this.data.props[i].y,
+        aClockwise: this.data.props[i].aClockwise,
+        aRotation: 0
+      });
+    }
+  }, {
+    key: "generateGeometry",
+    value: function generateGeometry(mesh, data) {
+      var curve = new THREE.EllipseCurve(data.ax, data.aY, data.xRadius, data.yRadius, data.aStartAngle, data.aEndAngle, data.aClockwise, data.aRotation);
+      var points = curve.getPoints(50);
+      var geometry = new THREE.BufferGeometry(16).setFromPoints(points);
+      this.updateGroupGeometry(mesh, geometry);
+    }
+  }, {
+    key: "updateGroupGeometry",
+    value: function updateGroupGeometry(mesh, geometry) {
+      mesh.children[0].geometry.dispose();
+      mesh.children[0].geometry = geometry;
+    }
+  }]);
+
+  return Circle;
+}();
+
+module.exports = Circle;
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports) {
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Figure =
+/*#__PURE__*/
+function () {
+  function Figure(data, scene) {
+    _classCallCheck(this, Figure);
+
+    this.scene = scene;
+    this.data = data;
+  }
+
+  _createClass(Figure, [{
+    key: "inRad",
+    value: function inRad(num) {
+      return num * Math.PI / 180;
+    }
+  }]);
+
+  return Figure;
+}();
+
+module.exports = Figure;
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports) {
+
+var imitationInterface = [
+/*{
+    radius: 2,
+    size: 0.1,
+    increase: Math.PI / 280,
+    aClockwise: false,
+    side: -1,
+    y: 0,
+    angle: {
+        x: Math.PI / 360,
+        y: Math.PI / 360,
+        z: 0,
+    },
+    position: {
+        x: -2,
+        y: 0,
+        z: 0
+    },
+    rotate: {
+        x: 0,
+        y: 0,
+        z: 0
+    }
+},
+{
+    radius: 2,
+    size: 0.1,
+    increase: Math.PI / 280,
+    aClockwise: false,
+    side: 1,
+    y: 0,
+    angle: {
+        x: Math.PI / 360,
+        y: Math.PI / 360,
+        z: 0,
+    },
+    position: {
+        x: 2,
+        y: 0,
+        z: 0
+    },
+    rotate: {
+        x: 0,
+        y: inRad(180),
+        z: 0
+    }
+},
+ {
+     radius: 2,
+     size: 0.1,
+     increase: Math.PI / 280,
+     aClockwise: false,
+     side: 1,
+     y: 0,
+     angle: {
+         x: 0,
+         y: Math.PI / 360,
+         z: Math.PI / 360,
+     },
+     position: {
+         x: 0,
+         y: 0,
+         z: 2
+     },
+     rotate: {
+         x: 0,
+         y: inRad(90),
+         z: 0
+     }
+ },*/
+
+/*  {
+       radius: 2,
+       size: 0.1,
+       increase: Math.PI / 280,
+       aClockwise: false,
+       side: -1,
+       y: 0,
+       angle: {
+           x: 0,
+           y: Math.PI/360,
+           z: Math.PI/360,
+       },
+       position: {
+           x: 0,
+           y: 0,
+           z: -2
+       },
+       rotate: {
+           x: 0,
+           y: -inRad(90),
+           z: 0
+       }
+   },*/
+
+/* {
+     radius: -2,
+     size: 0.1,
+     increase: -Math.PI / 280,
+     aClockwise: true,
+     side: -1,
+     y: 0,
+     angle: {
+         x: Math.PI / 180,
+         y: Math.PI / 180,
+         z: Math.PI / 180,
+     },
+     position: {
+         x: Math.sqrt(2),
+         y: 0,
+         z: Math.sqrt(2)
+     },
+     rotate: {
+         x: 0,
+         y: -inRad(45),
+         z: 0
+     }
+ },
+ {
+     radius: -2,
+     size: 0.1,
+     increase: -Math.PI / 280,
+     aClockwise: true,
+     side: -1,
+     y: 0,
+     angle: {
+         x: Math.PI / 180,
+         y: Math.PI / 180,
+         z: Math.PI / 180,
+     },
+     position: {
+         x: Math.sqrt(3),
+         y: 0,
+         z: 1
+     },
+     rotate: {
+         x: 0,
+         y: -inRad(30),
+         z: 0
+     }
+ },*/
+{
+  radius: -2,
+  size: 0.1,
+  increase: -Math.PI / 280,
+  aClockwise: true,
+  side: -1,
+  y: 0,
+  angle: {
+    x: inRad(1),
+    y: inRad(1),
+    z: inRad(1)
+  },
+  position: {
+    x: 1,
+    y: 0,
+    z: Math.sqrt(3)
+  },
+  rotate: {
+    x: 0,
+    y: -inRad(60),
+    z: 0
+  }
+}];
+
+function inRad(num) {
+  return num * Math.PI / 180;
+}
+
+module.exports = imitationInterface;
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Figure = __webpack_require__(25);
+
+var Particle =
+/*#__PURE__*/
+function (_Figure) {
+  _inherits(Particle, _Figure);
+
+  function Particle(data, scene) {
+    _classCallCheck(this, Particle);
+
+    return _possibleConstructorReturn(this, (Particle.__proto__ || Object.getPrototypeOf(Particle)).call(this, data, scene));
+  }
+
+  _createClass(Particle, [{
+    key: "createParticles",
+    value: function createParticles(i) {
+      var geometry = new THREE.SphereBufferGeometry(this.data.props[i].size, 16, 16);
+      var material = new THREE.MeshBasicMaterial();
+      this.data.mesh[i] = new THREE.Mesh(geometry, material);
+      this.scene.add(this.data.mesh[i]);
+      this.motionParticle(i);
+    }
+  }, {
+    key: "motionParticle",
+    value: function motionParticle(i) {
+      var radius = this.inRad(this.data.props[i].radius * this.data.props[i].side);
+      var angle = this.data.props[i].angle;
+      this.calculationMotion(i, 'x', {
+        radius: radius,
+        angle: angle,
+        horizontal: true
+      });
+      this.calculationMotion(i, 'y', {
+        radius: radius,
+        angle: angle,
+        horizontal: false
+      });
+      this.calculationMotion(i, 'z', {
+        radius: radius,
+        angle: angle,
+        horizontal: true
+      });
+    }
+  }, {
+    key: "calculationMotion",
+    value: function calculationMotion(i, axis, data) {
+      var props = this.data.props[i];
+      /*  let divider = data.horizontal && Math.abs(props.radius) !== props.position[axis] ? props.position[this.reverseDivider(axis)] : 1;*/
+
+      var divider = data.horizontal && Math.abs(props.radius) !== props.position[axis] ? this.reverseDivider(axis) : 1;
+      var square = this.inRad(Math.pow(props.radius, 2)) / divider;
+      var ordinate = data.horizontal ? Math.sin(data.angle[axis]) : Math.cos(data.angle[axis]);
+      this.data.mesh[i].position[axis] += square * ordinate;
+      if (data.angle[axis]) data.angle[axis] += data.radius;
+    }
+  }, {
+    key: "reverseDivider",
+    value: function reverseDivider(axis) {
+      return axis === 'x' ? Math.sqrt(3) : 1;
+    }
+  }]);
+
+  return Particle;
+}(Figure);
+
+module.exports = Particle;
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var imitationInterface = __webpack_require__(26);
+
+var Circle = __webpack_require__(24);
+
+var Particle = __webpack_require__(27);
+
+var Particles =
+/*#__PURE__*/
+function () {
+  function Particles(scene) {
+    _classCallCheck(this, Particles);
+
+    this.data = {
+      props: [],
+      mesh: [],
+      meshCircle: []
+    };
+    this.circle = new Circle(this.data, scene);
+    this.particle = new Particle(this.data, scene);
+    this.countParticles = imitationInterface.length;
+
+    for (var i = 0; i < this.countParticles; i++) {
+      this.data.props.push(imitationInterface[i]);
+      this.data.mesh.push(0);
+      this.data.meshCircle.push(0);
+      this.particle.createParticles(i);
+      this.circle.createCircle(i);
+    }
+  }
+
+  _createClass(Particles, [{
+    key: "updateElements",
+    value: function updateElements() {
+      for (var i = 0; i < this.countParticles; i++) {
+        this.particle.motionParticle(i);
+        var props = this.data.props[i];
+
+        if (props.y + props.increase <= 2 && props.y + props.increase >= -2) {
+          props.y += props.increase;
+          this.circle.motionCircle(i);
+        } else {
+          props.y = props.aClockwise ? -2 : 2;
+          this.circle.motionCircle(i);
+        }
+      }
+    }
+  }]);
+
+  return Particles;
+}();
+
+module.exports = Particles;
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports) {
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 var flag = true;
 
 var SystemBase =
@@ -1477,7 +1803,7 @@ function () {
 module.exports = SystemBase;
 
 /***/ }),
-/* 25 */
+/* 30 */
 /***/ (function(module, exports) {
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1522,7 +1848,7 @@ function () {
 module.exports = AxisHelper;
 
 /***/ }),
-/* 26 */
+/* 31 */
 /***/ (function(module, exports) {
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1776,7 +2102,7 @@ function () {
 module.exports = Calc;
 
 /***/ }),
-/* 27 */
+/* 32 */
 /***/ (function(module, exports) {
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -2314,7 +2640,7 @@ function () {
 module.exports = Ease;
 
 /***/ }),
-/* 28 */
+/* 33 */
 /***/ (function(module, exports) {
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -2410,7 +2736,7 @@ function () {
 module.exports = Osc;
 
 /***/ }),
-/* 29 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
