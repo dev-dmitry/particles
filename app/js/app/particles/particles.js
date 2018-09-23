@@ -1,4 +1,5 @@
-const imitationInterface = require('./imitationInterface');
+//const data = require('./imitationInterface');
+const data = require('./interface');
 const Circle = require('./circle');
 const Particle = require('./particle');
 
@@ -12,10 +13,11 @@ class Particles {
         this.circle = new Circle(this.data, scene);
         this.particle = new Particle(this.data, scene);
 
-        this.countParticles = imitationInterface.length;
+        this.countParticles = data.length;
+        console.log( data )
         for(let i = 0; i < this.countParticles; i++){
             this.data.props.push(
-                imitationInterface[i]
+                data[i]
             );
             this.data.mesh.push(0);
             this.data.meshCircle.push(0);

@@ -1392,176 +1392,74 @@ module.exports = Figure;
 /* 26 */
 /***/ (function(module, exports) {
 
-var imitationInterface = [
-/*{
-    radius: 2,
+var option = {
+  quantity: 2,
+  charge: Boolean,
+  durations: Number,
+  induction: Number
+};
+var coordinateQuarter = [90, 180, 270, 360];
+var gapsDegrees = 360 / option.quantity;
+var degree = 0;
+var options = [];
+
+for (var i = 0; i < option.quantity; i++) {
+  var degreeThis = degree += gapsDegrees;
+  var quarter = getCoordinateQuarter(degreeThis);
+  var sign = quarter === 1 || quarter === 3 ? 1 : -1;
+  var signAngle = quarter === 1 || quarter === 3 ? -1 : 1;
+  var rotateValue = degreeThis > 90 ? 90 * (quarter + 1) - (degreeThis - 90 * quarter) : 90 - degreeThis;
+  options.push({
+    radius: 2 * sign,
     size: 0.1,
-    increase: Math.PI / 280,
-    aClockwise: false,
-    side: -1,
+    increase: Math.PI / 280 * sign,
+    aClockwise: !(sign > 0),
+    side: sign,
     y: 0,
     angle: {
-        x: Math.PI / 360,
-        y: Math.PI / 360,
-        z: 0,
+      x: Math.PI / 180,
+      y: Math.PI / 180,
+      z: Math.PI / 180
     },
     position: {
-        x: -2,
-        y: 0,
-        z: 0
+      x: Math.sin(inRad(degreeThis)) * 2,
+      y: 0,
+      z: Math.sin(inRad(rotateValue)) * 2 * signAngle
     },
     rotate: {
-        x: 0,
-        y: 0,
-        z: 0
-    }
-},
-{
-    radius: 2,
-    size: 0.1,
-    increase: Math.PI / 280,
-    aClockwise: false,
-    side: 1,
-    y: 0,
-    angle: {
-        x: Math.PI / 360,
-        y: Math.PI / 360,
-        z: 0,
+      x: 0,
+      y: -inRad(rotateValue),
+      z: 0
     },
-    position: {
-        x: 2,
-        y: 0,
-        z: 0
-    },
-    rotate: {
-        x: 0,
-        y: inRad(180),
-        z: 0
-    }
-},
- {
-     radius: 2,
-     size: 0.1,
-     increase: Math.PI / 280,
-     aClockwise: false,
-     side: 1,
-     y: 0,
-     angle: {
-         x: 0,
-         y: Math.PI / 360,
-         z: Math.PI / 360,
-     },
-     position: {
-         x: 0,
-         y: 0,
-         z: 2
-     },
-     rotate: {
-         x: 0,
-         y: inRad(90),
-         z: 0
-     }
- },*/
+    degree: degreeThis,
+    quarter: quarter,
+    rotateValue: rotateValue,
+    sign: quarter === 1 || quarter === 3 ? -1 : 1
+  });
+}
 
-/*  {
-       radius: 2,
-       size: 0.1,
-       increase: Math.PI / 280,
-       aClockwise: false,
-       side: -1,
-       y: 0,
-       angle: {
-           x: 0,
-           y: Math.PI/360,
-           z: Math.PI/360,
-       },
-       position: {
-           x: 0,
-           y: 0,
-           z: -2
-       },
-       rotate: {
-           x: 0,
-           y: -inRad(90),
-           z: 0
-       }
-   },*/
+function getCoordinateQuarter(val) {
+  if (val > 90) {
+    var _quarter = 0;
+    coordinateQuarter.forEach(function (el, i) {
+      var next = i + 1;
+      if (coordinateQuarter[next] === undefined) return next;
 
-/* {
-     radius: -2,
-     size: 0.1,
-     increase: -Math.PI / 280,
-     aClockwise: true,
-     side: -1,
-     y: 0,
-     angle: {
-         x: Math.PI / 180,
-         y: Math.PI / 180,
-         z: Math.PI / 180,
-     },
-     position: {
-         x: Math.sqrt(2),
-         y: 0,
-         z: Math.sqrt(2)
-     },
-     rotate: {
-         x: 0,
-         y: -inRad(45),
-         z: 0
-     }
- },
- {
-     radius: -2,
-     size: 0.1,
-     increase: -Math.PI / 280,
-     aClockwise: true,
-     side: -1,
-     y: 0,
-     angle: {
-         x: Math.PI / 180,
-         y: Math.PI / 180,
-         z: Math.PI / 180,
-     },
-     position: {
-         x: Math.sqrt(3),
-         y: 0,
-         z: 1
-     },
-     rotate: {
-         x: 0,
-         y: -inRad(30),
-         z: 0
-     }
- },*/
-{
-  radius: -2,
-  size: 0.1,
-  increase: -Math.PI / 280,
-  aClockwise: true,
-  side: -1,
-  y: 0,
-  angle: {
-    x: inRad(1),
-    y: inRad(1),
-    z: inRad(1)
-  },
-  position: {
-    x: 1,
-    y: 0,
-    z: Math.sqrt(3)
-  },
-  rotate: {
-    x: 0,
-    y: -inRad(60),
-    z: 0
+      if (val > el && val <= coordinateQuarter[next]) {
+        return _quarter = next;
+      }
+    });
+    return _quarter;
+  } else {
+    return 0;
   }
-}];
+}
 
 function inRad(num) {
   return num * Math.PI / 180;
 }
 
-module.exports = imitationInterface;
+module.exports = options;
 
 /***/ }),
 /* 27 */
@@ -1625,19 +1523,17 @@ function (_Figure) {
   }, {
     key: "calculationMotion",
     value: function calculationMotion(i, axis, data) {
-      var props = this.data.props[i];
-      /*  let divider = data.horizontal && Math.abs(props.radius) !== props.position[axis] ? props.position[this.reverseDivider(axis)] : 1;*/
-
-      var divider = data.horizontal && Math.abs(props.radius) !== props.position[axis] ? this.reverseDivider(axis) : 1;
-      var square = this.inRad(Math.pow(props.radius, 2)) / divider;
+      var square = this.getSquare(i, axis, data);
       var ordinate = data.horizontal ? Math.sin(data.angle[axis]) : Math.cos(data.angle[axis]);
       this.data.mesh[i].position[axis] += square * ordinate;
       if (data.angle[axis]) data.angle[axis] += data.radius;
     }
   }, {
-    key: "reverseDivider",
-    value: function reverseDivider(axis) {
-      return axis === 'x' ? Math.sqrt(3) : 1;
+    key: "getSquare",
+    value: function getSquare(i, axis, data) {
+      var props = this.data.props[i];
+      var divider = data.horizontal ? props.position[axis] / Math.abs(props.radius) : 1;
+      return divider * this.inRad(Math.pow(Math.abs(props.radius), 2));
     }
   }]);
 
@@ -1656,7 +1552,8 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var imitationInterface = __webpack_require__(26);
+//const data = require('./imitationInterface');
+var data = __webpack_require__(26);
 
 var Circle = __webpack_require__(24);
 
@@ -1675,10 +1572,11 @@ function () {
     };
     this.circle = new Circle(this.data, scene);
     this.particle = new Particle(this.data, scene);
-    this.countParticles = imitationInterface.length;
+    this.countParticles = data.length;
+    console.log(data);
 
     for (var i = 0; i < this.countParticles; i++) {
-      this.data.props.push(imitationInterface[i]);
+      this.data.props.push(data[i]);
       this.data.mesh.push(0);
       this.data.meshCircle.push(0);
       this.particle.createParticles(i);

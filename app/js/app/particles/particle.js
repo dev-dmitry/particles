@@ -17,17 +17,16 @@ class Particle extends Figure{
         this.calculationMotion(i, 'y', {radius, angle, horizontal: false});
         this.calculationMotion(i, 'z', {radius, angle, horizontal: true});
     }
-    calculationMotion(i, axis, data ){
-        const props = this.data.props[i];
-      /*  let divider = data.horizontal && Math.abs(props.radius) !== props.position[axis] ? props.position[this.reverseDivider(axis)] : 1;*/
-        const divider = data.horizontal && Math.abs(props.radius) !== props.position[axis] ? this.reverseDivider(axis) : 1;
-        const square = this.inRad(props.radius**2) / divider;
+    calculationMotion(i, axis, data){
+        const square = this.getSquare(i, axis, data);
         const ordinate = data.horizontal ? Math.sin(data.angle[axis]) : Math.cos(data.angle[axis]);
         this.data.mesh[i].position[axis] += square * ordinate;
         if(data.angle[axis]) data.angle[axis] += data.radius;
     }
-    reverseDivider(axis){
-        return axis === 'x' ? Math.sqrt(3) : 1
+    getSquare(i, axis, data){
+        const props = this.data.props[i];
+        const divider = data.horizontal ? props.position[axis] / Math.abs(props.radius) : 1;
+        return divider * this.inRad( Math.abs(props.radius)**2 );
     }
 }
 
