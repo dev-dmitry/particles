@@ -290,8 +290,8 @@ function building() {
     var duration = $particlesEdit.eq(i).children('.duration').val(),
         charge = $particlesEdit.eq(i).children('.charge').val() * 1,
         _radius = duration / maxDuration * maxRadius * induction;
+    /*	duration = 10;	*/
 
-    duration = 10;
 
     if (_radius > maxRadius) {
       $particlesEdit.eq(i).children('.radius').val(maxRadius);
@@ -1314,6 +1314,7 @@ function () {
       Object.assign(this.data.meshCircle[i].position, this.data.props[i].position);
       this.scene.add(this.data.meshCircle[i]);
       this.motionCircle(i);
+      console.log('create');
     }
   }, {
     key: "motionCircle",
@@ -1393,48 +1394,59 @@ module.exports = Figure;
 /***/ (function(module, exports) {
 
 var option = {
-  quantity: 2,
-  charge: Boolean,
-  durations: Number,
-  induction: Number
+  quantity: 4,
+  charge: true,
+  durations: 4,
+  induction: 5,
+  size: 0.1
 };
+if (option.induction > 20) option.induction = 5;
+if (option.quantity > 50) option.quantity = 50;
 var coordinateQuarter = [90, 180, 270, 360];
 var gapsDegrees = 360 / option.quantity;
+var maxDuration = 15;
+var maxRadius = 15;
+var induction = 5 / option.induction;
+var angleRotation = Math.PI / 180;
 var degree = 0;
 var options = [];
 
 for (var i = 0; i < option.quantity; i++) {
   var degreeThis = degree += gapsDegrees;
   var quarter = getCoordinateQuarter(degreeThis);
-  var sign = quarter === 1 || quarter === 3 ? 1 : -1;
-  var signAngle = quarter === 1 || quarter === 3 ? -1 : 1;
   var rotateValue = degreeThis > 90 ? 90 * (quarter + 1) - (degreeThis - 90 * quarter) : 90 - degreeThis;
+  var radius = option.durations / maxDuration * maxRadius * induction;
+  var sign = -1;
+  var signAngle = 1;
+
+  if (quarter === 1 || quarter === 3) {
+    sign = 1;
+    signAngle = -1;
+  }
+
   options.push({
-    radius: 2 * sign,
-    size: 0.1,
-    increase: Math.PI / 280 * sign,
-    aClockwise: !(sign > 0),
+    charge: option.charge,
+    radius: radius * sign,
+    size: option.size,
+    increase: radius / 180 * (option.charge ? sign : signAngle),
+    aClockwise: option.charge ? !(sign > 0) : sign > 0,
     side: sign,
-    y: 0,
-    angle: {
-      x: Math.PI / 180,
-      y: Math.PI / 180,
-      z: Math.PI / 180
-    },
     position: {
-      x: Math.sin(inRad(degreeThis)) * 2,
+      x: Math.sin(inRad(degreeThis)) * radius,
       y: 0,
-      z: Math.sin(inRad(rotateValue)) * 2 * signAngle
+      z: Math.sin(inRad(rotateValue)) * radius * signAngle
     },
     rotate: {
       x: 0,
       y: -inRad(rotateValue),
       z: 0
     },
-    degree: degreeThis,
-    quarter: quarter,
-    rotateValue: rotateValue,
-    sign: quarter === 1 || quarter === 3 ? -1 : 1
+    angle: {
+      x: angleRotation,
+      y: angleRotation,
+      z: angleRotation
+    },
+    y: 0
   });
 }
 
@@ -1507,17 +1519,20 @@ function (_Figure) {
       this.calculationMotion(i, 'x', {
         radius: radius,
         angle: angle,
-        horizontal: true
+        horizontal: true,
+        charge: this.data.props[i].charge
       });
       this.calculationMotion(i, 'y', {
         radius: radius,
         angle: angle,
-        horizontal: false
+        horizontal: false,
+        charge: this.data.props[i].charge
       });
       this.calculationMotion(i, 'z', {
         radius: radius,
         angle: angle,
-        horizontal: true
+        horizontal: true,
+        charge: this.data.props[i].charge
       });
     }
   }, {
@@ -1525,15 +1540,16 @@ function (_Figure) {
     value: function calculationMotion(i, axis, data) {
       var square = this.getSquare(i, axis, data);
       var ordinate = data.horizontal ? Math.sin(data.angle[axis]) : Math.cos(data.angle[axis]);
-      this.data.mesh[i].position[axis] += square * ordinate;
-      if (data.angle[axis]) data.angle[axis] += data.radius;
+      var charge = data.charge ? 1 : -1;
+      this.data.mesh[i].position[axis] += square * ordinate * charge;
+      if (data.angle[axis]) data.angle[axis] += data.radius * charge;
     }
   }, {
     key: "getSquare",
     value: function getSquare(i, axis, data) {
       var props = this.data.props[i];
-      var divider = data.horizontal ? props.position[axis] / Math.abs(props.radius) : 1;
-      return divider * this.inRad(Math.pow(Math.abs(props.radius), 2));
+      var divider = data.horizontal ? props.position[axis] / props.radius : 1;
+      return divider * this.inRad(Math.pow(props.radius, 2));
     }
   }]);
 
@@ -1573,7 +1589,6 @@ function () {
     this.circle = new Circle(this.data, scene);
     this.particle = new Particle(this.data, scene);
     this.countParticles = data.length;
-    console.log(data);
 
     for (var i = 0; i < this.countParticles; i++) {
       this.data.props.push(data[i]);

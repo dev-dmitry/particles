@@ -290,8 +290,8 @@ function building() {
     var duration = $particlesEdit.eq(i).children('.duration').val(),
         charge = $particlesEdit.eq(i).children('.charge').val() * 1,
         _radius = duration / maxDuration * maxRadius * induction;
+    /*	duration = 10;	*/
 
-    duration = 10;
 
     if (_radius > maxRadius) {
       $particlesEdit.eq(i).children('.radius').val(maxRadius);

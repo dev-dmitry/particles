@@ -12,9 +12,7 @@ class Particles {
         };
         this.circle = new Circle(this.data, scene);
         this.particle = new Particle(this.data, scene);
-
         this.countParticles = data.length;
-        console.log( data )
         for(let i = 0; i < this.countParticles; i++){
             this.data.props.push(
                 data[i]

@@ -11,9 +11,10 @@ class Circle{
                 color: 0xffffff,
             })
         ));
-        Object.assign(this.data.meshCircle[i].position, this.data.props[i].position)
+        Object.assign(this.data.meshCircle[i].position, this.data.props[i].position);
         this.scene.add(this.data.meshCircle[i]);
         this.motionCircle(i)
+        console.log( 'create' )
     }
     motionCircle(i) {
         //TODO наклоны
