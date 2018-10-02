@@ -1,7 +1,7 @@
 let option = {
-    quantity: 4,
+    quantity: 3,
     charge: true,
-    durations: 4,
+    durations: 2,
     induction: 5,
     size: 0.1
 };

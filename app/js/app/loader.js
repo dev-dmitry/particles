@@ -39,10 +39,17 @@ class Loader {
         this.onResize();
 
 
-        this.particles = new Particles(this.scene);
 
+        this.particles = new Particles(this.scene);
         this.system = new System(this);
-        this.loop();
+
+
+        //TODO запуск
+        //setTimeout(()=>{
+            this.loop();
+        //}, 3000)
+
+
     }
     update() {
         this.deltaTimeSeconds = this.clock.getDelta();

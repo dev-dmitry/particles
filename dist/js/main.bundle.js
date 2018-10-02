@@ -739,8 +739,10 @@ function () {
     this.listen();
     this.onResize();
     this.particles = new Particles(this.scene);
-    this.system = new System(this);
-    this.loop();
+    this.system = new System(this); //TODO запуск
+    //setTimeout(()=>{
+
+    this.loop(); //}, 3000)
   }
 
   _createClass(Loader, [{
@@ -1394,9 +1396,9 @@ module.exports = Figure;
 /***/ (function(module, exports) {
 
 var option = {
-  quantity: 4,
+  quantity: 3,
   charge: true,
-  durations: 4,
+  durations: 2,
   induction: 5,
   size: 0.1
 };
