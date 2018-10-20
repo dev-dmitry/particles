@@ -1,5 +1,5 @@
 let option = {
-    quantity: 3,
+    quantity: 160,
     charge: true,
     durations: 2,
     induction: 5,
@@ -7,7 +7,7 @@ let option = {
 };
 
 if ( option.induction > 20 ) option.induction = 5;
-if ( option.quantity > 50 ) option.quantity = 50;
+/*if ( option.quantity > 50 ) option.quantity = 50;*/
 
 const coordinateQuarter = [ 90, 180, 270, 360 ];
 const gapsDegrees = 360 / option.quantity;

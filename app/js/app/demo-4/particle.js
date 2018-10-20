@@ -18,7 +18,6 @@ class Particle extends ParticleBase {
 	}
 	update() {
       //  let angle = this.calc.map(this.order, 0, 1, -Math.cos(this.loader.elapsedMilliseconds * 0.0015) * (Math.PI * 1.5), Math.sin(this.loader.elapsedMilliseconds * 0.0015) * (Math.PI * 1.5));
-
         //angle += this.alternate ? Math.PI : 0;
 		let x = halfPI * radius * Math.sin(angle);
 		let z = halfPI * 0 * Math.sin(angle);

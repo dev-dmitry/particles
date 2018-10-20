@@ -1,4 +1,3 @@
-let flag = true
 class SystemBase {
 	constructor(loader) {
 		this.loader = loader;
@@ -15,8 +14,6 @@ class SystemBase {
 		this.particleGroup.scale.set(0.0001, 0.0001, 0.0001);
 		this.loader.scene.add(this.particleGroup);
 
-
-
 		this.entering = true;
 		this.enterProgress = 0;
 		this.enterRate = 0.1;
@@ -28,36 +25,8 @@ class SystemBase {
 	}
 
 	update() {
-		let i = this.particles.length;
-		if(flag){
-           /* console.log( this.particles[0] )
-			console.log( this.particleGroup )*/
-			flag = false
-		}
-
-        this.particles[0].update()
-        this.particleGroup.scale.set(1, 1, 1);
-	/*	if(this.entering && this.enterProgress < 1) {
-			this.enterProgress += this.enterRate * this.loader.deltaTimeNormal;
-			if(this.enterProgress > 1) {
-				this.enterProgress = 1;
-				this.entering = false;
-			}
-			let scale = this.ease.inOutExpo(this.enterProgress, 0, 1, 1);
-			this.particleGroup.scale.set(scale, scale, scale);
-		}*/
-
-		/*if(!this.exiting && this.loader.elapsedMilliseconds > this.duration) {
-			this.exiting = true;
-		}
-
-		if(this.exiting) {
-			this.exitProgress += this.exitRate * this.loader.deltaTimeNormal;
-			if(this.exitProgress >= 1 && !this.loader.completed) {
-				this.exitProgress = 1;
-				this.loader.complete();
-			}
-		}*/
+        //this.particles[0].update()
+       // this.particleGroup.scale.set(1, 1, 1);
 	}
 
 	replay() {

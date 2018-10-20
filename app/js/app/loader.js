@@ -1,7 +1,4 @@
-const Calc = require('./utils/calc');
-const Ease = require('./utils/ease');
 const AxisHelper = require('./utils/axis');
-
 const Particles = require('./particles/particles');
 
 let stats = new Stats();
@@ -10,8 +7,6 @@ document.body.appendChild( stats.dom );
 
 class Loader {
     constructor(System) {
-        this.calc = new Calc();
-        this.ease = new Ease();
 
         this.dom = {
             html: document.documentElement,
@@ -37,8 +32,6 @@ class Loader {
         this.setupHelpers();
         this.listen();
         this.onResize();
-
-
 
         this.particles = new Particles(this.scene);
         this.system = new System(this);
@@ -286,136 +279,3 @@ class Loader {
 }
 
 module.exports = Loader;
-
-
-/*    function CircleGeometry( mesh ) {
-        var data = {
-            radius: 2,
-            segments: 64,
-            thetaStart: 1,
-            thetaLength: Math.PI * 2
-        };
-        function generateGeometry() {
-            updateGroupGeometry( mesh,
-                new THREE.CircleGeometry(
-                    data.radius, data.segments, data.thetaStart, data.thetaLength
-                )
-            );
-        }
-        var folder = gui.addFolder( 'THREE.CircleGeometry' );
-        folder.add( data, 'radius', 1, 100 ).onChange( generateGeometry );
-        folder.add( data, 'segments', -10, 100 ).onChange( generateGeometry );
-        folder.add( data, 'thetaStart', -10, 100 ).onChange( generateGeometry );
-        folder.add( data, 'thetaLength', 0, Math.PI * 2 ).onChange( generateGeometry );
-        generateGeometry();
-    }
-    function circle(mesh) {
-        let data = {
-            radius: 5,
-            segments: 64,
-            thetaStart: 1,
-            thetaLength: Math.PI * 2
-        }
-        function generateGeometry() {
-            var circleGeometry = new THREE.CircleGeometry(data.radius, data.segments, data.thetaStart, data.thetaLength);
-            var geometry = new THREE.Geometry();
-            for(let i = 1; i <= data.segments; i++){
-                geometry.vertices.push( circleGeometry.vertices[i] );
-            }
-            geometry.vertices.push( geometry.vertices[0] );
-            updateGroupGeometry( mesh, geometry );
-        }
-        var folder = gui.addFolder( 'THREE.CircleGeometry' );
-        folder.add( data, 'radius', 0, Math.PI * 2 ).onChange( generateGeometry );
-        folder.add( data, 'segments', -10, 100 ).onChange( generateGeometry );
-        folder.add( data, 'thetaStart', -10, 100 ).onChange( generateGeometry );
-        folder.add( data, 'thetaLength', 0, Math.PI * 2 ).onChange( generateGeometry );
-        generateGeometry();
-    }
-    function RingGeometry( mesh ) {
-        var data = {
-            innerRadius: 5,
-            outerRadius: 10,
-            thetaSegments: 8,
-            phiSegments: 8,
-            thetaStart: 0,
-            thetaLength: Math.PI * 2
-        };
-        function generateGeometry() {
-            updateGroupGeometry( mesh,
-                new THREE.RingGeometry(
-                    data.innerRadius, data.outerRadius, data.thetaSegments, data.phiSegments, data.thetaStart, data.thetaLength
-                )
-            );
-        }
-        var folder = gui.addFolder( 'THREE.RingGeometry' );
-        folder.add( data, 'innerRadius', 1, 100 ).onChange( generateGeometry );
-        folder.add( data, 'outerRadius', 1, 100 ).onChange( generateGeometry );
-        folder.add( data, 'thetaSegments', 1, 100 ).step( 1 ).onChange( generateGeometry );
-        folder.add( data, 'phiSegments', 1, 100 ).step( 1 ).onChange( generateGeometry );
-        folder.add( data, 'thetaStart', 0, Math.PI * 2 ).onChange( generateGeometry );
-        folder.add( data, 'thetaLength', 0, Math.PI * 2 ).onChange( generateGeometry );
-        generateGeometry();
-    }
-    function TorusBufferGeometry( mesh ) {
-        var data = {
-            radius: 2,
-            tube: 0.05,
-            radialSegments: 16,
-            tubularSegments: 195,
-            arc: Math.PI * 2
-        };
-        function generateGeometry() {
-            updateGroupGeometry( mesh,
-                new THREE.TorusBufferGeometry(
-                    data.radius, data.tube, data.radialSegments, data.tubularSegments, data.arc,
-                )
-            );
-        }
-        var folder = gui.addFolder( 'THREE.TorusBufferGeometry' );
-        folder.add( data, 'radius', 1, 100 ).onChange( generateGeometry );
-        folder.add( data, 'tube', -10, 100 ).onChange( generateGeometry );
-        folder.add( data, 'arc', 0, Math.PI * 2 ).onChange( generateGeometry );
-        generateGeometry();
-    }
-    function EllipseCurve( mesh ) {
-        var data = {
-            ax: 0, aY: 0,
-            xRadius: 1, yRadius: 1,
-            aStartAngle: 0, aEndAngle: 2 * Math.PI,
-            aClockwise: false,
-            aRotation: 0,
-        };
-        function generateGeometry() {
-            var curve = new THREE.EllipseCurve(
-                data.ax, data.aY, data.xRadius, data.yRadius, data.aStartAngle,
-                data.aEndAngle, data.aClockwise, data.aRotation
-            );
-            var points = curve.getPoints( 50 );
-            var geometry = new THREE.BufferGeometry(16).setFromPoints( points );
-            updateGroupGeometry( mesh, geometry );
-        }
-        var folder = gui.addFolder( 'THREE.EllipseCurve' );
-        folder.add( data, 'xRadius', 1, 100 ).onChange( generateGeometry );
-        folder.add( data, 'yRadius', 1, 100 ).onChange( generateGeometry );
-        folder.add( data, 'aStartAngle', 0, Math.PI * 2 ).onChange( generateGeometry );
-        folder.add( data, 'aEndAngle', 0, Math.PI * 2 ).onChange( generateGeometry );
-        generateGeometry();
-    }*/
-/*    function bendTheCone(r1, r2, rMain, theta, segments){
-        var geom = new THREE.CylinderGeometry(r1, r2, theta, 3, segments);
-        geom.translate(rMain, theta / 2 ,0);
-
-        geom.vertices.forEach(function(vertex){
-            var localTheta = vertex.y;
-            var localRadius = vertex.x;
-            vertex.x = Math.cos(localTheta) * localRadius;
-            vertex.y = Math.sin(localTheta) * localRadius;
-        });
-        geom.computeFaceNormals();
-        geom.computeVertexNormals();
-        return geom;
-    }
-    var geometry = bendTheCone(0.5, 0.5, 10, THREE.Math.degToRad(360), 60);
-    var mesh = new THREE.Mesh(geometry, new THREE.LineBasicMaterial());
-    this.scene.add(mesh);*/

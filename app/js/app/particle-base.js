@@ -26,7 +26,6 @@ class ParticleBase {
 		this.createMesh();
 	}
 	createMesh() {
-
 		this.geometry = this.system.sphereGeometry;
 		this.material = new THREE.MeshBasicMaterial({
 			color: this.color,
